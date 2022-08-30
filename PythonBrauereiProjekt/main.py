@@ -9,7 +9,7 @@ def rastHinzufuegen():
 
    # ranz.dialogAuslesen()
 
-
+# Test um GitHub zu verstehen123
 
 # Rast Enfernen Button gedrückt
 def rastEntfernen():
