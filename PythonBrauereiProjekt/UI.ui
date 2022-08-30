@@ -1,0 +1,552 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1280</width>
+    <height>720</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <property name="toolButtonStyle">
+   <enum>Qt::ToolButtonIconOnly</enum>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="0">
+     <widget class="QTabWidget" name="registerWidget">
+      <property name="font">
+       <font>
+        <pointsize>20</pointsize>
+       </font>
+      </property>
+      <property name="cursor">
+       <cursorShape>ArrowCursor</cursorShape>
+      </property>
+      <property name="tabPosition">
+       <enum>QTabWidget::South</enum>
+      </property>
+      <property name="currentIndex">
+       <number>1</number>
+      </property>
+      <property name="movable">
+       <bool>true</bool>
+      </property>
+      <widget class="QWidget" name="uebersicht">
+       <attribute name="title">
+        <string>Übersicht</string>
+       </attribute>
+      </widget>
+      <widget class="QWidget" name="meischen">
+       <attribute name="title">
+        <string>Meischen</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_2">
+        <item row="0" column="4">
+         <widget class="QPushButton" name="buttonStop">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>100</width>
+            <height>100</height>
+           </size>
+          </property>
+          <property name="cursor">
+           <cursorShape>PointingHandCursor</cursorShape>
+          </property>
+          <property name="styleSheet">
+           <string notr="true"/>
+          </property>
+          <property name="text">
+           <string>stop</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="5">
+         <spacer name="meischenSpacerOben">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="0" column="1">
+         <widget class="QLabel" name="meldungRuehrwerk">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>100</width>
+            <height>100</height>
+           </size>
+          </property>
+          <property name="font">
+           <font>
+            <pointsize>8</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+          <property name="pixmap">
+           <pixmap>Icons/Propeller100x100.gif</pixmap>
+          </property>
+          <property name="scaledContents">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="0">
+         <widget class="QLabel" name="meldungHeizplatte">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>100</width>
+            <height>100</height>
+           </size>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+          <property name="pixmap">
+           <pixmap>Icons/Heizplatte100x100.png</pixmap>
+          </property>
+          <property name="scaledContents">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="2">
+         <widget class="QPushButton" name="buttonPlay">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+            <horstretch>4</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>100</width>
+            <height>100</height>
+           </size>
+          </property>
+          <property name="cursor">
+           <cursorShape>PointingHandCursor</cursorShape>
+          </property>
+          <property name="mouseTracking">
+           <bool>true</bool>
+          </property>
+          <property name="styleSheet">
+           <string notr="true"/>
+          </property>
+          <property name="text">
+           <string>play</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="6">
+         <layout class="QVBoxLayout" name="vertikalTemperaturen">
+          <item>
+           <widget class="QLabel" name="istTemp">
+            <property name="text">
+             <string>IST: 30°C</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="sollTemp">
+            <property name="text">
+             <string>SOLL: 50°C</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item row="0" column="3">
+         <widget class="QPushButton" name="buttonPause">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>100</width>
+            <height>100</height>
+           </size>
+          </property>
+          <property name="cursor">
+           <cursorShape>PointingHandCursor</cursorShape>
+          </property>
+          <property name="styleSheet">
+           <string notr="true"/>
+          </property>
+          <property name="text">
+           <string>pause</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="6">
+         <layout class="QVBoxLayout" name="verticalLayout">
+          <property name="spacing">
+           <number>30</number>
+          </property>
+          <property name="leftMargin">
+           <number>15</number>
+          </property>
+          <property name="topMargin">
+           <number>15</number>
+          </property>
+          <property name="rightMargin">
+           <number>15</number>
+          </property>
+          <property name="bottomMargin">
+           <number>15</number>
+          </property>
+          <item>
+           <widget class="QPushButton" name="hinzufuegenB">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>Hinzufügen</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="entfernenB">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>Entfernen</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item row="1" column="0" colspan="6">
+         <widget class="QTableWidget" name="rastenTabelle">
+          <property name="cursor" stdset="0">
+           <cursorShape>ArrowCursor</cursorShape>
+          </property>
+          <row>
+           <property name="text">
+            <string>1</string>
+           </property>
+          </row>
+          <row>
+           <property name="text">
+            <string>2</string>
+           </property>
+           <property name="background">
+            <color>
+             <red>200</red>
+             <green>220</green>
+             <blue>255</blue>
+            </color>
+           </property>
+          </row>
+          <column>
+           <property name="text">
+            <string>Name</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Temp.</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Dauer</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Typ</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Rührer</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Meldung</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Kommentar</string>
+           </property>
+           <property name="textAlignment">
+            <set>AlignLeading|AlignVCenter</set>
+           </property>
+          </column>
+          <item row="0" column="0">
+           <property name="text">
+            <string>anfang</string>
+           </property>
+          </item>
+          <item row="0" column="3">
+           <property name="text">
+            <string/>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>24</pointsize>
+            </font>
+           </property>
+           <property name="icon">
+            <iconset>
+             <normaloff>Icons/Feuer200x200.png</normaloff>Icons/Feuer200x200.png</iconset>
+           </property>
+          </item>
+          <item row="0" column="4">
+           <property name="text">
+            <string>AN</string>
+           </property>
+           <property name="toolTip">
+            <string notr="true" comment="toolTipKennung" extracomment="toolTipKommentar"/>
+           </property>
+           <property name="whatsThis">
+            <string notr="true" comment="whatsThisKennung" extracomment="whatsThisKommentar"/>
+           </property>
+           <property name="font">
+            <font>
+             <stylestrategy>NoAntialias</stylestrategy>
+            </font>
+           </property>
+           <property name="textAlignment">
+            <set>AlignCenter</set>
+           </property>
+           <property name="background">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>150</red>
+              <green>255</green>
+              <blue>150</blue>
+             </color>
+            </brush>
+           </property>
+           <property name="foreground">
+            <brush brushstyle="NoBrush">
+             <color alpha="255">
+              <red>0</red>
+              <green>0</green>
+              <blue>0</blue>
+             </color>
+            </brush>
+           </property>
+           <property name="flags">
+            <set>ItemIsSelectable|ItemIsEditable|ItemIsDragEnabled|ItemIsDropEnabled|ItemIsUserCheckable|ItemIsEnabled|ItemIsAutoTristate</set>
+           </property>
+          </item>
+          <item row="0" column="5">
+           <property name="text">
+            <string>AUS</string>
+           </property>
+           <property name="textAlignment">
+            <set>AlignCenter</set>
+           </property>
+           <property name="background">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>255</red>
+              <green>150</green>
+              <blue>150</blue>
+             </color>
+            </brush>
+           </property>
+          </item>
+          <item row="1" column="0">
+           <property name="text">
+            <string>ende</string>
+           </property>
+           <property name="background">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>200</red>
+              <green>220</green>
+              <blue>255</blue>
+             </color>
+            </brush>
+           </property>
+          </item>
+          <item row="1" column="1">
+           <property name="text">
+            <string/>
+           </property>
+           <property name="background">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>200</red>
+              <green>220</green>
+              <blue>255</blue>
+             </color>
+            </brush>
+           </property>
+          </item>
+          <item row="1" column="2">
+           <property name="text">
+            <string/>
+           </property>
+           <property name="background">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>200</red>
+              <green>220</green>
+              <blue>255</blue>
+             </color>
+            </brush>
+           </property>
+          </item>
+          <item row="1" column="3">
+           <property name="text">
+            <string/>
+           </property>
+           <property name="background">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>200</red>
+              <green>220</green>
+              <blue>255</blue>
+             </color>
+            </brush>
+           </property>
+           <property name="icon">
+            <iconset>
+             <normaloff>Icons/snowflake1.png</normaloff>Icons/snowflake1.png</iconset>
+           </property>
+          </item>
+          <item row="1" column="4">
+           <property name="text">
+            <string>AUS</string>
+           </property>
+           <property name="textAlignment">
+            <set>AlignCenter</set>
+           </property>
+           <property name="background">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>255</red>
+              <green>150</green>
+              <blue>150</blue>
+             </color>
+            </brush>
+           </property>
+          </item>
+          <item row="1" column="5">
+           <property name="text">
+            <string>AN</string>
+           </property>
+           <property name="textAlignment">
+            <set>AlignCenter</set>
+           </property>
+           <property name="background">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>150</red>
+              <green>255</green>
+              <blue>150</blue>
+             </color>
+            </brush>
+           </property>
+          </item>
+          <item row="1" column="6">
+           <property name="text">
+            <string/>
+           </property>
+           <property name="background">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>200</red>
+              <green>220</green>
+              <blue>255</blue>
+             </color>
+            </brush>
+           </property>
+          </item>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="luetern_nachguss">
+       <attribute name="title">
+        <string>Leutern/Nachguss</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_5"/>
+      </widget>
+      <widget class="QWidget" name="kochen">
+       <attribute name="title">
+        <string>Kochen</string>
+       </attribute>
+      </widget>
+      <widget class="QWidget" name="einstellungen">
+       <attribute name="title">
+        <string>Einstellungen</string>
+       </attribute>
+       <widget class="QPushButton" name="pushButton">
+        <property name="geometry">
+         <rect>
+          <x>20</x>
+          <y>20</y>
+          <width>201</width>
+          <height>61</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Brauruf Test</string>
+        </property>
+       </widget>
+      </widget>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

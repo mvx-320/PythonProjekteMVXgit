@@ -1,0 +1,556 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1280</width>
+    <height>720</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <property name="toolButtonStyle">
+   <enum>Qt::ToolButtonIconOnly</enum>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="0">
+     <widget class="QTabWidget" name="registerWidget">
+      <property name="font">
+       <font>
+        <pointsize>20</pointsize>
+       </font>
+      </property>
+      <property name="tabPosition">
+       <enum>QTabWidget::South</enum>
+      </property>
+      <property name="currentIndex">
+       <number>1</number>
+      </property>
+      <property name="movable">
+       <bool>true</bool>
+      </property>
+      <widget class="QWidget" name="uebersicht">
+       <attribute name="title">
+        <string>Übersicht</string>
+       </attribute>
+      </widget>
+      <widget class="QWidget" name="meischen">
+       <attribute name="title">
+        <string>Meischen</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_2">
+        <item row="0" column="2">
+         <widget class="QPushButton" name="buttonPlay">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+            <horstretch>4</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>100</width>
+            <height>100</height>
+           </size>
+          </property>
+          <property name="cursor">
+           <cursorShape>PointingHandCursor</cursorShape>
+          </property>
+          <property name="mouseTracking">
+           <bool>true</bool>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QPushButton{
+	background-color: transparent;
+	border-image: url(&quot;C:/Users/max0t/OneDrive/Dokumente/PythonProjekteMVX/PythonBrauereiProjekt/Icons/play1.png&quot;);
+	background: none;
+	border: none;
+	background-repeat: none;
+}
+QPushButton:pressed{
+	border-image: url(&quot;C:/Users/max0t/OneDrive/Dokumente/PythonProjekteMVX/PythonBrauereiProjekt/Icons/play2.png&quot;);
+}</string>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="3">
+         <widget class="QPushButton" name="buttonPause">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>100</width>
+            <height>100</height>
+           </size>
+          </property>
+          <property name="cursor">
+           <cursorShape>PointingHandCursor</cursorShape>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QPushButton{
+	background-color: transparent;
+	border-image: url(&quot;C:/Users/max0t/OneDrive/Dokumente/PythonProjekteMVX/PythonBrauereiProjekt/Icons/pause1.png&quot;);
+	background: none;
+	border: none;
+	background-repeat: none;
+}
+QPushButton:pressed{
+	border-image: url(&quot;C:/Users/max0t/OneDrive/Dokumente/PythonProjekteMVX/PythonBrauereiProjekt/Icons/pause2.png&quot;);
+}</string>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="4">
+         <widget class="QPushButton" name="buttonStop">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>100</width>
+            <height>100</height>
+           </size>
+          </property>
+          <property name="cursor">
+           <cursorShape>PointingHandCursor</cursorShape>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QPushButton{
+	background-color: transparent;
+	border-image: url(&quot;C:/Users/max0t/OneDrive/Dokumente/PythonProjekteMVX/PythonBrauereiProjekt/Icons/stop1.png&quot;);
+	background: none;
+	border: none;
+	background-repeat: none;
+}
+QPushButton: pressed{
+	border-image: url(&quot;C:/Users/max0t/OneDrive/Dokumente/PythonProjekteMVX/PythonBrauereiProjekt/Icons/stop2.png&quot;);
+}</string>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="5">
+         <spacer name="meischenSpacerOben">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="0" column="1">
+         <widget class="QLabel" name="meldungRuehrwerk">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>100</width>
+            <height>100</height>
+           </size>
+          </property>
+          <property name="font">
+           <font>
+            <pointsize>8</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+          <property name="pixmap">
+           <pixmap>Icons/Propeller100x100.gif</pixmap>
+          </property>
+          <property name="scaledContents">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="0">
+         <widget class="QLabel" name="meldungHeizplatte">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>100</width>
+            <height>100</height>
+           </size>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+          <property name="pixmap">
+           <pixmap>Icons/Heizplatte100x100.png</pixmap>
+          </property>
+          <property name="scaledContents">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="6">
+         <layout class="QVBoxLayout" name="vertikalTemperaturen">
+          <item>
+           <widget class="QLabel" name="istTemp">
+            <property name="text">
+             <string>IST: 30°C</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="sollTemp">
+            <property name="text">
+             <string>SOLL: 50°C</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item row="1" column="0" colspan="7">
+         <widget class="QScrollArea" name="meischenScrollArea">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="widgetResizable">
+           <bool>true</bool>
+          </property>
+          <widget class="QWidget" name="scrollAreaWidgetContents">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>0</y>
+             <width>1230</width>
+             <height>506</height>
+            </rect>
+           </property>
+           <layout class="QGridLayout" name="gridLayout_3">
+            <item row="0" column="0">
+             <widget class="QWidget" name="widget" native="true">
+              <layout class="QGridLayout" name="gridLayout_4">
+               <item row="0" column="1">
+                <widget class="QLabel" name="m2">
+                 <property name="text">
+                  <string>meische2</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="3">
+                <widget class="QLabel" name="m4">
+                 <property name="text">
+                  <string>meische4</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="2">
+                <widget class="QLabel" name="m3">
+                 <property name="text">
+                  <string>meische3</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="0">
+                <widget class="QLabel" name="m1">
+                 <property name="text">
+                  <string>meische1</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="0" colspan="4">
+                <widget class="QWidget" name="Rast1" native="true">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>100</height>
+                  </size>
+                 </property>
+                 <layout class="QHBoxLayout" name="horizontalLayout">
+                  <item>
+                   <widget class="QLineEdit" name="aBezeichnung"/>
+                  </item>
+                  <item>
+                   <widget class="QLineEdit" name="bTemperatur"/>
+                  </item>
+                  <item>
+                   <widget class="QLineEdit" name="cDauer"/>
+                  </item>
+                  <item>
+                   <widget class="QComboBox" name="dTyp">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="minimumSize">
+                     <size>
+                      <width>140</width>
+                      <height>0</height>
+                     </size>
+                    </property>
+                    <property name="font">
+                     <font>
+                      <pointsize>12</pointsize>
+                     </font>
+                    </property>
+                    <item>
+                     <property name="text">
+                      <string>TEMP &gt;</string>
+                     </property>
+                     <property name="icon">
+                      <iconset>
+                       <selectedon>Icons/FeuerIcon.png</selectedon>
+                      </iconset>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>TEMP &lt;</string>
+                     </property>
+                     <property name="icon">
+                      <iconset>
+                       <selectedon>Icons/snowflake1.png</selectedon>
+                      </iconset>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>TEMP ~</string>
+                     </property>
+                     <property name="icon">
+                      <iconset>
+                       <selectedon>Icons/clock1.png</selectedon>
+                      </iconset>
+                     </property>
+                    </item>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QCheckBox" name="eRuehrwerk">
+                    <property name="minimumSize">
+                     <size>
+                      <width>200</width>
+                      <height>0</height>
+                     </size>
+                    </property>
+                    <property name="text">
+                     <string/>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QCheckBox" name="fBrauruf">
+                    <property name="text">
+                     <string>CheckBox</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item row="2" column="0" colspan="4">
+                <spacer name="verticalSpacer">
+                 <property name="orientation">
+                  <enum>Qt::Vertical</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>20</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+              </layout>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="luetern_nachguss">
+       <attribute name="title">
+        <string>Leutern/Nachguss</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_5">
+        <item row="0" column="0">
+         <widget class="QTableWidget" name="tableWidget">
+          <attribute name="horizontalHeaderMinimumSectionSize">
+           <number>75</number>
+          </attribute>
+          <attribute name="horizontalHeaderDefaultSectionSize">
+           <number>146</number>
+          </attribute>
+          <row>
+           <property name="text">
+            <string>1</string>
+           </property>
+          </row>
+          <row>
+           <property name="text">
+            <string>2</string>
+           </property>
+          </row>
+          <row>
+           <property name="text">
+            <string>3</string>
+           </property>
+          </row>
+          <row>
+           <property name="text">
+            <string>4</string>
+           </property>
+          </row>
+          <row>
+           <property name="text">
+            <string>5</string>
+           </property>
+          </row>
+          <row>
+           <property name="text">
+            <string>6</string>
+           </property>
+          </row>
+          <row>
+           <property name="text">
+            <string>7</string>
+           </property>
+          </row>
+          <row>
+           <property name="text">
+            <string>8</string>
+           </property>
+          </row>
+          <row>
+           <property name="text">
+            <string>9</string>
+           </property>
+          </row>
+          <row>
+           <property name="text">
+            <string>10</string>
+           </property>
+          </row>
+          <row>
+           <property name="text">
+            <string>12</string>
+           </property>
+          </row>
+          <column>
+           <property name="text">
+            <string>Name</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Temperatur</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Dauer</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Neue Spalte</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Typ</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Rührwerk</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Kommentar</string>
+           </property>
+          </column>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="kochen">
+       <attribute name="title">
+        <string>Kochen</string>
+       </attribute>
+      </widget>
+      <widget class="QWidget" name="einstellungen">
+       <attribute name="title">
+        <string>Einstellungen</string>
+       </attribute>
+       <widget class="QPushButton" name="pushButton">
+        <property name="geometry">
+         <rect>
+          <x>20</x>
+          <y>20</y>
+          <width>201</width>
+          <height>61</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Brauruf Test</string>
+        </property>
+       </widget>
+      </widget>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
