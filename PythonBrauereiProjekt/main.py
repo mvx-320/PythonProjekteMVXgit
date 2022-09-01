@@ -10,6 +10,8 @@ def rastHinzufuegen():
    # ranz.dialogAuslesen()
 
 
+#smtn new in hear
+
 
 # Rast Enfernen Button gedrückt
 def rastEntfernen():
