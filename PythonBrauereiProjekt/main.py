@@ -11,7 +11,6 @@ import ui1, dialogRast
 
 # Rast Hinzufügen Button gedrückt
 def rastHinzufuegen():
-    #!!!! letzte Rastposition an das DialogFenster übergeben
 
     main.currentID = ui.rastenTabelle.rowCount() +1
     dialog.positionCoB.clear()
@@ -28,30 +27,34 @@ def rastHinzufuegen():
 
     NeueRastHinzufuegen.show()
 
-    #ui.rastenTabelle.setRowCount(3) # muss größer werden
-
-    #!!!!!!! Abchecken ob man neues VericalItem erzeugen muss
-
-   # ranz.dialogAuslesen()
+    #!!!!!!! Abchecken ob man neues VericalItem erzeugen muss // Bisher nicht
 
 
 # Rast Enfernen Button gedrückt
 def rastEntfernen():
-    #!!!! Nachfrage 'Soll die Rast wirklich gelöscht werden?'
-    print("Dreckssack\n alsdjföl")
+    loeschAnfrage = QtWidgets.QMessageBox()
+    loeschAnfrage.setWindowTitle('Rast löschen?')
+    loeschAnfrage.setText('Soll die Rast wirklich gelöscht werden?')
+    pixmap = QtGui.QPixmap("Icons/müll3.png")
 
+    loeschAnfrage.setIconPixmap(pixmap)
+    loeschAnfrage.setStandardButtons(QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No)
+    #loeschAnfrage.setInformativeText('(Rast wird dauerhaft gelöscht)')
+    loeschAnfrage.accepted.connect(Rast.rastLoeschen)
+
+    if len(rasten_array) > 0:
+        msg = loeschAnfrage.exec_()
 
 class Dialog:
     @staticmethod
     def dialogAuslesen():
 
-
-        main.currentID = dialog.positionCoB.currentIndex() +1
+        main.currentID = dialog.positionCoB.currentIndex() + 1
         bezeichnung = dialog.bezeichnungLE.text()
         temperatur = dialog.temperaturLE.text()
         dauer = dialog.dauerLE.text()
         typ = dialog.typCoB.currentIndex()
-        if dialog.ruehrwerkChB.checkState() == 2: # 0 = Unchecked; 2 = Checked
+        if dialog.ruehrwerkChB.checkState() == 2:  # 0 = Unchecked; 2 = Checked
             ruehrwerk = True
         else:
             ruehrwerk = False
@@ -60,25 +63,32 @@ class Dialog:
         else:
             brauruf = False
         kommentar = dialog.kommentarTE.document().toPlainText()
-        kommentar = kommentar.replace('\n','  ')
-        #       print(main.currentID)
-        #       print(rasten_array.count(0))
-        if main.currentID > len(rasten_array) +1:
-            main.currentID = len(rasten_array) +1
+        kommentar = kommentar.replace('\n', '  ')
+
+        if main.currentID > len(rasten_array) + 1:
+            main.currentID = len(rasten_array) + 1
         if main.currentID < 1:
             main.currentID = 1
-        #       print(ruehrwerk)
-        rasten_array.insert(main.currentID - 1,Rast(bezeichnung, str(kommentar), temperatur, dauer, typ, ruehrwerk, brauruf))
 
-        # nur zum testen
-#        for i in range(0, len(rasten_array)):
- #           print(main.currentID)
-  #          print(i)
-   #         print(rasten_array[i].name)
+        rasten_array.insert(main.currentID - 1, Rast(bezeichnung, str(kommentar), temperatur, dauer, typ, ruehrwerk, brauruf))
 
-        Dialog.tabelleAktualisieren()
+        Rast.tabelleAktualisieren()
 
-#!!!!! noch in Rast schieben
+
+
+class Rast:
+
+
+    def __init__(self, name: str, comment: str, temp: int, time: int, typ: int, agitator: bool, brauruf: bool):
+        self.name = str(name)
+        self.temp = temp
+        self.time = time
+        self.typ = typ
+        self.agitator = agitator
+        self.brauruf = brauruf
+        self.comment = str(comment) #!!!evtl. .adjustSize-Methode bei Comment Item
+
+
     @staticmethod
     def tabelleAktualisieren():
         _translate = QtCore.QCoreApplication.translate
@@ -97,7 +107,7 @@ class Dialog:
                     brush.setStyle(QtCore.Qt.SolidPattern)
                     item.setBackground(brush)
 
-                #print(rasten_array[h].commet)
+                # print(rasten_array[h].commet)
                 if i == 0:
                     item.setText(_translate("MainWindow", rasten_array[h].name))
                 elif i == 1:
@@ -144,30 +154,14 @@ class Dialog:
                     else:
                         print('kein Boolwert')
 
-
-
                 ui.rastenTabelle.setItem(h, i, item)
 
-
-
-#nur zum testen
-   #     for i in range(0, len(rasten_array)):
-    #        print(rasten_array[i].name)
-
-
-
-class Rast:
-
-
-    def __init__(self, name: str, comment: str, temp: int, time: int, typ: int, agitator: bool, brauruf: bool):
-        self.name = str(name)
-        self.temp = temp
-        self.time = time
-        self.typ = typ
-        self.agitator = agitator
-        self.brauruf = brauruf
-        self.comment = str(comment) #!!!evtl. .adjustSize-Methode bei Comment Item
-        #               self.ID += 1 # Passt so noch nicht. Muss noch auf position angepasst werden
+    @staticmethod
+    def rastLoeschen():
+        r = ui.rastenTabelle.currentRow()
+        print(r)
+        rasten_array.remove(rasten_array[r])
+        Rast.tabelleAktualisieren()
 
     # private Variablen evtl. durch Keyword @property
     # getter- / setter-Methoden
@@ -179,7 +173,8 @@ class Rast:
         pass
 
 def changeMainWindow():
-
+#!w!!! Bearbeitbarkeit der rastenTabelle entwernen
+#!w!!! rastenTabelle bearbeiten mit auswählen und dann vorausgewähltem Feld im Dialogfenster
     ui.rastenTabelle.setColumnWidth(0, 300)
     ui.rastenTabelle.setColumnWidth(1, 50)
     ui.rastenTabelle.setColumnWidth(2, 60)
@@ -189,10 +184,9 @@ def changeMainWindow():
     movie.start()
 
 def changeDialog():
-#!!!!! Größe vom Dialogfenster wieder veränderbar machen
-#!!!!! Hier muss noch rein das die ComboBox nur soviele Zahlen hat wie es auch rows gibt
+#!!!!! Größe vom Dialogfenster wieder veränderbar machen // evtl noch kleiner
     dialog.positionCoB.setCurrentIndex(ui.rastenTabelle.rowCount())
-#!!!!! Die aktuellen Lehrzeichen müssen entfernt werden
+#!!!!! Die aktuellen Lehrzeichen müssen entfernt werden // evtl schon draußen
     dialog.temperaturLE.setAlignment(QtCore.Qt.AlignCenter)
     dialog.temperaturLE.setInputMask("00") #D damit die Zahl >0 sein muss
     dialog.dauerLE.setAlignment(QtCore.Qt.AlignCenter)
@@ -222,8 +216,6 @@ if __name__ == "__main__":
     dialog.setupUi(NeueRastHinzufuegen)
     changeDialog()
 
-    #!!!!dialogRast.ui.dialogButtons.s # QDialogButtonBox mit Methode verbinden + dafür Youtubevideo ansehen
-    #dialog.dialogButtons.accepted.connect(Dialog.dialogAuslesen())
 
     dialogC = Dialog()
     dialog.dialogButtons.accepted.connect(lambda: dialogC.dialogAuslesen())
