@@ -74,6 +74,7 @@ class Dialog:
 
         Dialog.tabelleAktualisieren()
 
+#!!!!! noch in Rast schieben
     @staticmethod
     def tabelleAktualisieren():
         _translate = QtCore.QCoreApplication.translate
