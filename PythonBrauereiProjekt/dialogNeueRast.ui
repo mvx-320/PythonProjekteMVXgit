@@ -101,6 +101,33 @@
        <pointsize>17</pointsize>
       </font>
      </property>
+     <item>
+      <property name="text">
+       <string>wärmer</string>
+      </property>
+      <property name="icon">
+       <iconset>
+        <normaloff>Icons/Feuer1200x1200.png</normaloff>Icons/Feuer1200x1200.png</iconset>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>kälter</string>
+      </property>
+      <property name="icon">
+       <iconset>
+        <normaloff>Icons/snowflake1.png</normaloff>Icons/snowflake1.png</iconset>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>egal</string>
+      </property>
+      <property name="icon">
+       <iconset>
+        <normaloff>Icons/clock1.png</normaloff>Icons/clock1.png</iconset>
+      </property>
+     </item>
     </widget>
    </item>
    <item row="4" column="0">
