@@ -5,6 +5,10 @@ import time
 import main
 import ui1, dialogRast
 
+# Github Upload:
+# neues Commit erstellen auf Git->Commit...
+# Push (oben rechts) von ThisIsMyBranch -> origin, master
+
 # Rast Hinzufügen Button gedrückt
 def rastHinzufuegen():
     #!!!! letzte Rastposition an das DialogFenster übergeben
