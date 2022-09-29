@@ -1,13 +1,21 @@
-from PyQt5 import QtCore, QtGui, QtWidgets
 import sys
 import time
 
-import main
+from PyQt5 import QtCore, QtGui, QtWidgets
+from threading import Thread, Timer
+from datetime import datetime
+
+import main # Braucht man für currentID
 import ui1, dialogRast
 
 # Github Upload:
 # neues Commit erstellen auf Git->Commit...
 # Push (oben rechts) von ThisIsMyBranch -> origin, master
+
+
+#!!! Editierbarkeit bei allen Items wie bei Item 0,0
+#!!! Typ entfernen start nach Temperaturannäherung in Einstellungen bearbeitbar
+#!!! QProgressBar in QTableWidget mit .setCellWidget()
 
 # Rast Hinzufügen Button gedrückt
 def rastHinzufuegen():
@@ -29,20 +37,18 @@ def rastHinzufuegen():
 
     #!!!!!!! Abchecken ob man neues VericalItem erzeugen muss // Bisher nicht
 
-
 # Rast Enfernen Button gedrückt
 def rastEntfernen():
-    loeschAnfrage = QtWidgets.QMessageBox()
-    loeschAnfrage.setWindowTitle('Rast löschen?')
-    loeschAnfrage.setText('Soll die Rast wirklich gelöscht werden?')
-    pixmap = QtGui.QPixmap("Icons/müll3.png")
-
-    loeschAnfrage.setIconPixmap(pixmap)
-    loeschAnfrage.setStandardButtons(QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No)
-    #loeschAnfrage.setInformativeText('(Rast wird dauerhaft gelöscht)')
-    loeschAnfrage.accepted.connect(Rast.rastLoeschen)
-
     if len(rasten_array) > 0:
+        loeschAnfrage = QtWidgets.QMessageBox()
+        loeschAnfrage.setWindowTitle('Rast löschen?')
+        loeschAnfrage.setText('Soll die Rast wirklich gelöscht werden?')
+        pixmap = QtGui.QPixmap("Icons/müll3.png")
+
+        loeschAnfrage.setIconPixmap(pixmap)
+        loeschAnfrage.setStandardButtons(QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No)
+        # loeschAnfrage.setInformativeText('(Rast wird dauerhaft gelöscht)')
+        loeschAnfrage.accepted.connect(Rast.rastLoeschen)
         msg = loeschAnfrage.exec_()
 
 class Dialog:
@@ -74,11 +80,7 @@ class Dialog:
 
         Rast.tabelleAktualisieren()
 
-
-
 class Rast:
-
-
     def __init__(self, name: str, comment: str, temp: int, time: int, typ: int, agitator: bool, brauruf: bool):
         self.name = str(name)
         self.temp = temp
@@ -159,7 +161,6 @@ class Rast:
     @staticmethod
     def rastLoeschen():
         r = ui.rastenTabelle.currentRow()
-        print(r)
         rasten_array.remove(rasten_array[r])
         Rast.tabelleAktualisieren()
 
@@ -171,6 +172,119 @@ class Rast:
     def RührwerkAn(self):
         # Ausgangsbeschaltung des Raspberrys
         pass
+
+class Runtime:
+    @staticmethod
+    def start():
+        #!!!hier Visualisierung in den Runmodus setzen
+        #!!!Beim PlayButton bleibt das movieObjekt (propeller) stehen
+
+        threads = []
+
+        # Threads in threads-Array und starten
+        threadTime = Thread(target=Runtime.timerRun, name="zeit", args=['abschalten'])
+        threadPID = Thread(target=Runtime.pidRegelung, name="pid", args=['pid'])
+
+        threads.append(threadTime)
+        threadTime.start()
+        #Hier dazwischen darf nichts stehen???
+        threads.append(threadPID)
+        threadPID.start()
+        print("Vor join")
+        # Wait for all threads to finish
+        for t in threads:
+            t.join()
+        print("Nach join")
+
+        del threadPID
+        del threadTime
+
+    @staticmethod
+    def pause():
+        pass
+
+    @staticmethod
+    def stopp():
+        pass
+
+    @staticmethod # Thread
+    def timerRun(name):
+        try:
+            print('timer Run ausgeführt')
+            round = 0
+            print("Anzahl der Rast-Objekte im rasten_array: " + str(len(rasten_array)))
+
+            while round < len(rasten_array):
+
+                time.sleep(5)
+                print('Runde ' + str(round) + ': wurde beendet.')
+                round += 1
+
+
+            time.sleep(4)
+            Rast.tabelleAktualisieren()
+
+        except Exception as e:  # work on python 3.x
+            print('Failed to upload to ftp: ' + str(e))
+
+
+    @staticmethod # Thread
+    def pidRegelung(name):
+        print(name + ' letz go')
+
+
+
+# Hier ist noch kein Objekt instanziiert
+class MyTimer():
+    """
+    timer.start() - should start the timer
+    timer.pause() - should pause the timer
+    timer.resume() - should resume the timer
+    timer.get() - should return the current time
+    """
+
+    def __init__(self):
+        print('Initializing timer')
+        self.timestarted = None
+        self.timepaused = None
+        self.paused = False
+
+    def start(self):
+        """ Starts an internal timer by recording the current time """
+        print("Starting timer")
+        self.timestarted = datetime.now()
+
+    def pause(self):
+        """ Pauses the timer """
+        if self.timestarted is None:
+            raise ValueError("Timer not started")
+        if self.paused:
+            raise ValueError("Timer is already paused")
+        print('Pausing timer')
+        self.timepaused = datetime.now()
+        self.paused = True
+
+    def resume(self):
+        """ Resumes the timer by adding the pause time to the start time """
+        if self.timestarted is None:
+            raise ValueError("Timer not started")
+        if not self.paused:
+            raise ValueError("Timer is not paused")
+        print('Resuming timer')
+        pausetime = datetime.now() - self.timepaused
+        self.timestarted = self.timestarted + pausetime
+        self.paused = False
+
+    def get(self):
+        """ Returns a timedelta object showing the amount of time
+            elapsed since the start time, less any pauses """
+        print('Get timer value')
+        if self.timestarted is None:
+            raise ValueError("Timer not started")
+        if self.paused:
+            return self.timepaused - self.timestarted
+        else:
+            return datetime.now() - self.timestarted
 
 def changeMainWindow():
 #!w!!! Bearbeitbarkeit der rastenTabelle entwernen
@@ -192,9 +306,13 @@ def changeDialog():
     dialog.dauerLE.setAlignment(QtCore.Qt.AlignCenter)
     dialog.dauerLE.setInputMask("000")
 
+def programmVerlassen():
+    print('Beim Schließen nachfragen')
+    app.exec_()
+
 if __name__ == "__main__":
 
-    #main
+
     currentID = 0
     rasten_array = []
 
@@ -208,8 +326,17 @@ if __name__ == "__main__":
 
     changeMainWindow()
 
+    # Initialisierung Kopfverbindung mit Methoden
+    ui.buttonPlay.clicked.connect(Runtime.start)
+    ui.buttonPause.clicked.connect(Runtime.pause)
+    ui.buttonStop.clicked.connect(Runtime.stopp)
+    #!!! noch in Rast Klasse verschieben
     ui.hinzufuegenB.clicked.connect(rastHinzufuegen)  # .connect darf nicht in "changeMainWindow()" verschoben werden
     ui.entfernenB.clicked.connect(rastEntfernen)
+
+    # Initialisierung Threads
+
+
 
     NeueRastHinzufuegen = QtWidgets.QDialog()
     dialog = dialogRast.Ui_NeueRastHinzufuegen()
@@ -222,5 +349,5 @@ if __name__ == "__main__":
 
     MainWindow.show()
 
-    #!!!!!!! Bedingung für Exit
-    sys.exit(app.exec_())
+    #!!!!!!! Bedingung für Exit // funktioniert noch nicht
+    sys.exit(programmVerlassen())
