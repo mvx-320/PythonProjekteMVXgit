@@ -1,5 +1,6 @@
 import datetime
 import sys
+import threading
 import time
 
 from PyQt5 import QtCore, QtGui, QtWidgets
@@ -61,7 +62,10 @@ def rastEntfernen():
 class Dialog:
     @staticmethod
     def dialogAuslesen():
-
+        #!!! Abfragen ob die Felder befüllt sind
+        if dialog.dauerLE.text() == '':
+            NeueRastHinzufuegen.show()
+            return
         main.currentID = dialog.positionCoB.currentIndex() + 1
         bezeichnung = dialog.bezeichnungLE.text()
         temperatur = dialog.temperaturLE.text()
@@ -122,9 +126,9 @@ class Rast:
                 if i == 0:
                     item.setText(_translate("MainWindow", rasten_array[h].name))
                 elif i == 1:
-                    item.setText(_translate("MainWindow", rasten_array[h].temp))
+                    item.setText(_translate("MainWindow", str(rasten_array[h].temp) + " °C"))
                 elif i == 2:
-                    item.setText(_translate("MainWindow", rasten_array[h].time))
+                    item.setText(_translate("MainWindow", str(rasten_array[h].time) + ' min'))
                 elif i == 3:
                     if rasten_array[h].typ == 0:
                         item.setText(_translate("MainWindow", 'wärmer'))
@@ -188,61 +192,33 @@ class Runtime:
     def start():
         # !!!hier Visualisierung in den Runmodus setzen
 
-        threads = []
+        #threads = []
+        timerThreadI = timerThread(1, 'timer', 12)
+       #pidThreadI = pidThread(2, 'pid', 1, 2, 3)
 
+        timerThreadI.start()
+        #pidThreadI.start()
         ########Threads in threads-Array und starten
-        threadTime = Thread(target=Runtime.timerRun, name="zeit", args=['abschalten'])
-        threadPID = Thread(target=Runtime.pidRegelung, name="pid", args=['pidRegler'])
-        print("Threads werden erzeugt")
-        threads.append(threadTime)
-        threadTime.start()
+        #threadTime = Thread(target=Runtime.timerRun, name="zeit", args=['abschalten'])
+        #threadPID = Thread(target=Runtime.pidRegelung, name="pid", args=['pidRegler'])
+        #print("Threads werden erzeugt")
+        #threads.append(threadTime)
+        #threadTime.start()
         ##Hier dazwischen darf nichts stehen???
-        threads.append(threadPID)
-        threadPID.start()
+        #threads.append(threadPID)
+        #threadPID.start()
 
     @staticmethod
     def pause():
-        timer.pause()
+        #timer.pause()
+        pass
 
     @staticmethod
     def stopp():
         pass
-#voletile
-    @staticmethod  # Thread
-    def timerRun(name):#
-        print(name + '-Thread start')
-        fehler = 0
-        steps = 1000
-        #   try:
-        timer.start()
-        #Erzeugung aktuelleZeit & gesamtZeit
-        ges_zeit = 0
-        for rasten in rasten_array:
-            ges_zeit += int(rasten.time)
-        fehler += 1
-        # Rast.tabelleAktualisieren() #!!! Hier noch das aussehen der Rastentabelle ändern
-        gesamtZeit = timedelta(minutes=float(ges_zeit))
-        aktuelleZeit = timedelta(minutes=float(rasten_array[0].time))  # !!! Darf nicht einfach index 0 haben
 
-        ui.progressBarGesamt.setMaximum(steps)
-        fehler += 1
+    #808 hier war timerRun()
 
-        fehler += 1
-        # ui.progressBarRast.setMaximum(Runtime.time_to_num(str(aktuelleZeit)))
-
-        while timer.get() < aktuelleZeit:
-            # time.sleep(0.5)
-            # print('gesamtZeit: ' + str(gesamtZeit) + '; aktuelleZeit: ' + str(aktuelleZeit) + '; timer: ' + str(timer.get()))
-            #balken = timer.get() / gesamtZeit
-            #balkenInt = int(balken * steps)
-            # ui.progressBarGesamt.setValue(balkenInt)
-
-            ui.sollTemp.setText(str(timer.get()))
-            # print(Runtime.time_to_num(str(timer.get())))
-            # ui.progressBarRast.setValue(Runtime.time_to_num(str(timer.get())))
-
-    #      except Exception as e:  # work on python 3.x
-    #         print('Failed by ' + str(fehler) + ': ' + str(e))
 
     @staticmethod  # Thread
     def pidRegelung(name):
@@ -253,6 +229,60 @@ class Runtime:
         hh, mm, ss = map(int, time_str.split(':'))
         return ss + 60 * (mm + 60 * hh)
 
+class MyThread(Thread):
+    def __init__(self, threadID, name):
+        Thread.__init__(self)
+        self.threadID = threadID
+        self.name = name
+
+class timerThread(MyThread):
+    def __init__(self, threadID: int, name: str, time: float):
+        MyThread.__init__(self, threadID, name)
+        self.time = time
+
+    def run(self) -> None:
+        print("Starting: " + self.name + "\n")
+        if threadLock.locked():
+            threadLock.release()
+        threadLock.acquire()
+
+        if timer.timestarted != None:
+            timer.resume()
+        else:
+            timer.start()
+
+        ges_zeit = 0
+        for rasten in rasten_array:
+            ges_zeit += int(rasten.time)
+        #gesamtZeit = timedelta(minutes=float(ges_zeit))
+        #aktuelleZeit = timedelta(minutes=float(rasten_array[0].time))
+        while True:#timer.get() < aktuelleZeit
+            timeSEC = timer.get()
+            #print(timeSEC)
+            timeNOW = [int(timeSEC/60)%3600, int(timeSEC)%10, int(timeSEC*10)%10]
+            ui.sollTemp.setText(str(f'Time: {timeNOW[0]}:{timeNOW[1]}.{timeNOW[2]}'))
+
+
+        timer.timestarted = None
+
+        threadLock.release()
+        print("Exiting: " + self.name + "\n")
+
+class pidThread(MyThread):
+    def __int__(self, threadID: int, name: str, pValue: float, iValue: float, dValue: float):
+        MyThread.__init__(self, threadID, name)
+        self.pValue = pValue
+        self.iValue = iValue
+        self.dValue = dValue
+
+    def run(self) -> None:
+        print("Starting: " + self.name + "\n")
+        if threadLock.locked():
+            threadLock.release()
+        threadLock.acquire()
+        pass
+        threadLock.release()
+        print("Exiting: " + self.name + "\n")
 
 # Hier ist noch kein Objekt instanziiert
 class MyTimer():
@@ -265,25 +295,16 @@ class MyTimer():
 
     def __init__(self):
         # print('Initializing timer')
-        #self._mutex = QtCore.QMutex()
         self.timestarted = None
         self.timepaused = None
         self.paused = False
 
     def start(self):
-        #if self._mutex.tryLock() == True:
-            #print("Mutex wird gelockt")
-            #self._mutex.lock()
         #""" Starts an internal timer by recording the current time """
         print("Starting timer")
-        self.timestarted = datetime.now()
-        #self._mutex.unlock()
-        #print("Mutex wird unlockt")
+        self.timestarted = time.time()
 
     def pause(self):
-        #if self._mutex.tryLock() == True:
-            #print("Mutex wird gelockt")
-            #self._mutex.lock()
         #""" Pauses the timer """
         if self.timestarted is None:
             print("Timer not started")
@@ -292,15 +313,11 @@ class MyTimer():
             print("Timer is already paused")
             #raise ValueError("Timer is already paused")
         print('Pausing timer')
-        self.timepaused = datetime.now()
+        self.timepaused = time.time()
         self.paused = True
-        #self._mutex.unlock()
-        #print("Mutex wird unlockt")
+
 
     def resume(self):
-        #if self._mutex.tryLock() == True:
-            #print("Mutex wird gelockt")
-            #self._mutex.lock()
         #""" Resumes the timer by adding the pause time to the start time """
         if self.timestarted is None:
             print("Timer not started")
@@ -309,16 +326,11 @@ class MyTimer():
             print("Timer is not paused")
             #raise ValueError("Timer is not paused")
         print('Resuming timer')
-        pausetime = datetime.now() - self.timepaused
+        pausetime = time.time() - self.timepaused
         self.timestarted = self.timestarted + pausetime
         self.paused = False
-        #self._mutex.unlock()
-        #print("Mutex wird unlockt")
 
     def get(self):
-        #if self._mutex.tryLock() == True:
-            #print("Mutex wird gelockt")
-            #self._mutex.lock()
         """ Returns a timedelta object showing the amount of time
             elapsed since the start time, less any pauses """
         # print('Get timer value')
@@ -328,17 +340,14 @@ class MyTimer():
         if self.paused:
             return self.timepaused - self.timestarted
         else:
-            return datetime.now() - self.timestarted
-        #self._mutex.unlock()
-        #print("Mutex wird unlockt")
-
+            return time.time() - self.timestarted
 
 def changeMainWindow():
     # !w!!! Bearbeitbarkeit der rastenTabelle entwernen
     # !w!!! rastenTabelle bearbeiten mit auswählen und dann vorausgewähltem Feld im Dialogfenster
     ui.rastenTabelle.setColumnWidth(0, 300)
-    ui.rastenTabelle.setColumnWidth(1, 50)
-    ui.rastenTabelle.setColumnWidth(2, 60)
+    ui.rastenTabelle.setColumnWidth(1, 100)
+    ui.rastenTabelle.setColumnWidth(2, 120)
     ui.rastenTabelle.setColumnWidth(6, 1000)
     ui.progressBarRast.setFixedHeight(10)
     ui.progressBarGesamt.setFixedHeight(20)
@@ -386,9 +395,10 @@ if __name__ == "__main__":
 
     # Initialisierung Timer
     timer = MyTimer()
+    threadLock = threading.Lock()
 
     NeueRastHinzufuegen = QtWidgets.QDialog()
-    dialog = dialogRast.Ui_NeueRastHinzufuegen()
+    dialog = dialogRast.Ui_NeueRastHinzufuegen() # Klasse von dialogRast.py
     dialog.setupUi(NeueRastHinzufuegen)
     changeDialog()
 
@@ -398,4 +408,4 @@ if __name__ == "__main__":
     MainWindow.show()
 
     # !!!!!!! Bedingung für Exit // funktioniert noch nicht
-    sys.exit(programmVerlassen())
+    sys.exit(app.exec_())
