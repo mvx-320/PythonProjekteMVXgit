@@ -17,6 +17,8 @@ import ui1, dialogRast
 
 # FEHLERBEHEBUNG:
 # thread handling + sync/lock (volatile gibt es nicht)
+# FRAGE:
+# Warum friert bild nach 15min ein || Schreibfehler __init__() warum keine Exception my pyCharm und bei der CMD schon
 
 # !!! Editierbarkeit bei allen Items wie bei Item 0,0
 # !!! Typ entfernen start nach Temperaturannäherung in Einstellungen bearbeitbar
@@ -94,6 +96,9 @@ class Dialog:
 
 
 class Rast:
+    """
+    Klasse in der die Rasten inizialisiert werden
+    """
     def __init__(self, name: str, comment: str, temp: int, time: int, typ: int, agitator: bool, brauruf: bool):
         self.name = str(name)
         self.temp = temp
@@ -106,6 +111,10 @@ class Rast:
 
     @staticmethod
     def tabelleAktualisieren():
+        """
+        Aktuallisiert die Tabelle, in der die Rasten abgebildet werden.
+        Die Tabelle wird mit dem Array synchronisiert.
+        """
         _translate = QtCore.QCoreApplication.translate
         ui.rastenTabelle.setRowCount(len(rasten_array))
         for i in range(len(rasten_array)):
@@ -194,19 +203,24 @@ class Runtime:
 
         #threads = []
         timerThreadI = timerThread(1, 'timer', 12)
-       #pidThreadI = pidThread(2, 'pid', 1, 2, 3)
+        try:
+            pidThreadI = pidThread(2, 'pid', 3, 6, 9)
+        except Exception as ex:
+            print (type(ex))
+        #!!! except error oder so, soll alle fehler aufzeigen
+        else:
+            print('fuck off1')
+
 
         timerThreadI.start()
-        #pidThreadI.start()
-        ########Threads in threads-Array und starten
-        #threadTime = Thread(target=Runtime.timerRun, name="zeit", args=['abschalten'])
-        #threadPID = Thread(target=Runtime.pidRegelung, name="pid", args=['pidRegler'])
-        #print("Threads werden erzeugt")
-        #threads.append(threadTime)
-        #threadTime.start()
-        ##Hier dazwischen darf nichts stehen???
-        #threads.append(threadPID)
-        #threadPID.start()
+        time.sleep(2)
+        try:
+            pidThreadI.start()
+        except Exception as e:
+            print (e)
+        else:
+            print('fuck off2')
+
 
     @staticmethod
     def pause():
@@ -236,53 +250,75 @@ class MyThread(Thread):
         self.name = name
 
 class timerThread(MyThread):
+    """
+    Klasse des timer Threads
+    """
     def __init__(self, threadID: int, name: str, time: float):
+        """
+        Hier wird das timer Thread Objekt initialisiert
+        """
         MyThread.__init__(self, threadID, name)
         self.time = time
 
     def run(self) -> None:
-        print("Starting: " + self.name + "\n")
-        if threadLock.locked():
+        print('vor try')
+        try:
+            print("Starting: " + self.name + "\n")
+            if threadLock.locked():
+                threadLock.release()
+            threadLock.acquire()
+
+            if timer.timestarted != None:
+                timer.resume()
+            else:
+                timer.start()
+
+            ges_zeit_min = 0
+            for rasten in rasten_array:
+                ges_zeit_min += int(rasten.time)
+            ges_zeit_sec = ges_zeit_min * 60
+            #gesamtZeit = timedelta(minutes=float(ges_zeit))
+            #aktuelleZeit = timedelta(minutes=float(rasten_array[0].time))
+            while True:#timer.get() < aktuelleZeit
+                timeSEC = timer.get()
+                timeNOW = [int(timeSEC/60)%3600, int(timeSEC)%60, int(timeSEC*10)%10]
+                ui.sollTemp.setText(str(f'Time: {timeNOW[0]}:{timeNOW[1]}.{timeNOW[2]}'))
+                #print(str(timeSEC) + ' ' + str(ges_zeit_sec)+ ' ' + str(timeNOW[1]))
+                if timeSEC > float(ges_zeit_sec):
+                    print('break')
+                    break
+
+            timer.timestarted = None
+
             threadLock.release()
-        threadLock.acquire()
+            print("Exiting: " + self.name + "\n")
 
-        if timer.timestarted != None:
-            timer.resume()
+        except Exception as e:
+            print(e)
         else:
-            timer.start()
-
-        ges_zeit = 0
-        for rasten in rasten_array:
-            ges_zeit += int(rasten.time)
-        #gesamtZeit = timedelta(minutes=float(ges_zeit))
-        #aktuelleZeit = timedelta(minutes=float(rasten_array[0].time))
-        while True:#timer.get() < aktuelleZeit
-            timeSEC = timer.get()
-            #print(timeSEC)
-            timeNOW = [int(timeSEC/60)%3600, int(timeSEC)%10, int(timeSEC*10)%10]
-            ui.sollTemp.setText(str(f'Time: {timeNOW[0]}:{timeNOW[1]}.{timeNOW[2]}'))
-
-
-        timer.timestarted = None
-
-        threadLock.release()
-        print("Exiting: " + self.name + "\n")
+            print('fuck off3')
 
 class pidThread(MyThread):
-    def __int__(self, threadID: int, name: str, pValue: float, iValue: float, dValue: float):
+    def __init__(self, threadID: int, name: str, pValue: float, iValue: float, dValue: float):
         MyThread.__init__(self, threadID, name)
         self.pValue = pValue
         self.iValue = iValue
         self.dValue = dValue
 
     def run(self) -> None:
-        print("Starting: " + self.name + "\n")
-        if threadLock.locked():
+        print('vor try')
+        try:
+            print("Starting: " + self.name + "\n")
+            if threadLock.locked():
+                threadLock.release()
+            threadLock.acquire()
+            time.sleep(7)
             threadLock.release()
-        threadLock.acquire()
-        pass
-        threadLock.release()
-        print("Exiting: " + self.name + "\n")
+            print("Exiting: " + self.name + "\n")
+        except Exception as e:
+            print(e)
+        else:
+            print('fuck off4')
 
 # Hier ist noch kein Objekt instanziiert
 class MyTimer():
@@ -301,7 +337,7 @@ class MyTimer():
 
     def start(self):
         #""" Starts an internal timer by recording the current time """
-        print("Starting timer")
+        print("Starting MyTimer")
         self.timestarted = time.time()
 
     def pause(self):
@@ -408,4 +444,6 @@ if __name__ == "__main__":
     MainWindow.show()
 
     # !!!!!!! Bedingung für Exit // funktioniert noch nicht
-    sys.exit(app.exec_())
+    app.exec_()
+    print('hallo')
+    sys.exit()
