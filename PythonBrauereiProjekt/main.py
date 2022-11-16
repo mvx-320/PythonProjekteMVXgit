@@ -2,7 +2,7 @@ import datetime
 import sys
 import threading
 import time
-
+import traceback
 from PyQt5 import QtCore, QtGui, QtWidgets
 from threading import Thread, Timer
 from datetime import datetime, timedelta
@@ -82,7 +82,7 @@ class Dialog:
         else:
             brauruf = False
         kommentar = dialog.kommentarTE.document().toPlainText()
-        kommentar = kommentar.replace('\n', '  ')
+        kommentar = kommentar.replace('\n', '\t')
 
         if main.currentID > len(rasten_array) + 1:
             main.currentID = len(rasten_array) + 1
@@ -191,9 +191,12 @@ class Rast:
     # Sicherheit (private) (unsichere Methode __Name (für Variablen & Funktionen)
     # nur bestimmten Datentyp annehmen
 
-    def RührwerkAn(self):
+    def RuehrwerkAn(self):
         # Ausgangsbeschaltung des Raspberrys
         pass
+
+    def getTime(self) -> int:
+        return self.time
 
 
 class Runtime:
@@ -201,26 +204,30 @@ class Runtime:
     def start():
         # !!!hier Visualisierung in den Runmodus setzen
 
-        #threads = []
-        timerThreadI = timerThread(1, 'timer', 12)
-        try:
+        for i in range(0, 2):
+            try:
+                Runtime.threadInit(i)
+            except Exception:
+                print(clrs.red + traceback.format_exc() + clrs.end)
+            except:
+                print(clrs.red + traceback.format_exc() + clrs.end)
+            else:
+
+                print(clrs.green + 'done: Runtime' + str(i) + '\t' + clrs.end)
+
+
+    @staticmethod
+    def threadInit(step: int):
+        if step == 0:
+            timerThreadI = timerThread(1, 'timer', 12)
+            print(clrs.green + 'timerThreadI erzeugt\t' + clrs.end)
+            timerThreadI.start()
+            print(clrs.green + 'timerThreadI gestartet\t' + clrs.end)
+        elif step == 1:
             pidThreadI = pidThread(2, 'pid', 3, 6, 9)
-        except Exception as ex:
-            print (type(ex))
-        #!!! except error oder so, soll alle fehler aufzeigen
-        else:
-            print('fuck off1')
-
-
-        timerThreadI.start()
-        time.sleep(2)
-        try:
+            print(clrs.green + 'pidThreadI erzeugt\t' + clrs.end)
             pidThreadI.start()
-        except Exception as e:
-            print (e)
-        else:
-            print('fuck off2')
-
+            print(clrs.green + 'pidThreadI gestartet\t' + clrs.end)
 
     @staticmethod
     def pause():
@@ -243,13 +250,8 @@ class Runtime:
         hh, mm, ss = map(int, time_str.split(':'))
         return ss + 60 * (mm + 60 * hh)
 
-class MyThread(Thread):
-    def __init__(self, threadID, name):
-        Thread.__init__(self)
-        self.threadID = threadID
-        self.name = name
 
-class timerThread(MyThread):
+class timerThread(Thread):
     """
     Klasse des timer Threads
     """
@@ -257,13 +259,15 @@ class timerThread(MyThread):
         """
         Hier wird das timer Thread Objekt initialisiert
         """
-        MyThread.__init__(self, threadID, name)
+        Thread.__init__(self)
+        self.threadID = threadID
+        self.name = name
         self.time = time
 
     def run(self) -> None:
-        print('vor try')
+        print(clrs.green + 'timerThread beginnt \t' + clrs.end)
         try:
-            print("Starting: " + self.name + "\n")
+            print("Starting: " + self.name + "\t")
             if threadLock.locked():
                 threadLock.release()
             threadLock.acquire()
@@ -273,52 +277,66 @@ class timerThread(MyThread):
             else:
                 timer.start()
 
+
             ges_zeit_min = 0
             for rasten in rasten_array:
                 ges_zeit_min += int(rasten.time)
             ges_zeit_sec = ges_zeit_min * 60
-            #gesamtZeit = timedelta(minutes=float(ges_zeit))
-            #aktuelleZeit = timedelta(minutes=float(rasten_array[0].time))
-            while True:#timer.get() < aktuelleZeit
-                timeSEC = timer.get()
-                timeNOW = [int(timeSEC/60)%3600, int(timeSEC)%60, int(timeSEC*10)%10]
-                ui.sollTemp.setText(str(f'Time: {timeNOW[0]}:{timeNOW[1]}.{timeNOW[2]}'))
-                #print(str(timeSEC) + ' ' + str(ges_zeit_sec)+ ' ' + str(timeNOW[1]))
-                if timeSEC > float(ges_zeit_sec):
-                    print('break')
-                    break
+            ui.progressBarGesamt.setMaximum(ges_zeit_sec)
+            timeIndex = 0
+            rast_zeit_sec = 0
+            for timeIndex in range(len(rasten_array)):
+                time = (int(rasten_array[timeIndex].time))
+                rast_zeit_sec += time * 60
+                ui.progressBarRast.setMaximum(time * 60)
+                while True:#timer.get() < aktuelleZeit
+                    timeSEC = timer.get()
+                    timeNOW = [int(timeSEC/60)%3600, int(timeSEC)%60, int(timeSEC*10)%10]
+                    ui.progressBarRast.setValue(time * 60 - (ges_zeit_sec - int(timeSEC)))
+                    ui.progressBarGesamt.setValue(int(timeSEC))
+                    ui.sollTemp.setText(str(f'Time: {timeNOW[0]}:{timeNOW[1]}.{timeNOW[2]}'))
+                    #print(str(timeSEC) + ' ' + str(ges_zeit_sec)+ ' ' + str(timeNOW[1]))
+                    if timeSEC > float(rast_zeit_sec):
+                        print(clrs.blue + 'Timer abgelaufen' + clrs.end)
+                        break
 
             timer.timestarted = None
 
             threadLock.release()
-            print("Exiting: " + self.name + "\n")
-
-        except Exception as e:
-            print(e)
+            print("Exiting: " + self.name + "\t")
+        except Exception:
+            print(clrs.red + traceback.format_exc() + clrs.end)
+        except:
+            print(clrs.red + traceback.format_exc() + clrs.end)
         else:
-            print('fuck off3')
+            print(clrs.green + 'done: timerThread' + clrs.end)
 
-class pidThread(MyThread):
+
+class pidThread(Thread):
     def __init__(self, threadID: int, name: str, pValue: float, iValue: float, dValue: float):
-        MyThread.__init__(self, threadID, name)
+        Thread.__init__(self)
+        self.threadID = threadID
+        self.name = name
         self.pValue = pValue
         self.iValue = iValue
         self.dValue = dValue
 
     def run(self) -> None:
-        print('vor try')
+        print(clrs.green + 'pidThread beginnt\t' + clrs.end)
         try:
-            print("Starting: " + self.name + "\n")
+            print("Starting: " + self.name + "\t")
             if threadLock.locked():
                 threadLock.release()
             threadLock.acquire()
             time.sleep(7)
             threadLock.release()
-            print("Exiting: " + self.name + "\n")
-        except Exception as e:
-            print(e)
+            print("Exiting: " + self.name + "\t")
+        except Exception:
+            print(clrs.red + traceback.format_exc() + clrs.end)
+        except:
+            print(clrs.red + traceback.format_exc() + clrs.end)
         else:
-            print('fuck off4')
+            print(clrs.green + 'done: pidThread' + clrs.end)
 
 # Hier ist noch kein Objekt instanziiert
 class MyTimer():
@@ -336,12 +354,12 @@ class MyTimer():
         self.paused = False
 
     def start(self):
-        #""" Starts an internal timer by recording the current time """
-        print("Starting MyTimer")
+        """ Starts an internal timer by recording the current time """
+        print("Starting MyTimer\t")
         self.timestarted = time.time()
 
     def pause(self):
-        #""" Pauses the timer """
+        """ Pauses the timer """
         if self.timestarted is None:
             print("Timer not started")
             #raise ValueError("Timer not started")
@@ -352,15 +370,14 @@ class MyTimer():
         self.timepaused = time.time()
         self.paused = True
 
-
     def resume(self):
-        #""" Resumes the timer by adding the pause time to the start time """
+        """ Resumes the timer by adding the pause time to the start time """
         if self.timestarted is None:
             print("Timer not started")
-            #raise ValueError("Timer not started")
+            # raise ValueError("Timer not started")
         if not self.paused:
             print("Timer is not paused")
-            #raise ValueError("Timer is not paused")
+            # raise ValueError("Timer is not paused")
         print('Resuming timer')
         pausetime = time.time() - self.timepaused
         self.timestarted = self.timestarted + pausetime
@@ -377,6 +394,12 @@ class MyTimer():
             return self.timepaused - self.timestarted
         else:
             return time.time() - self.timestarted
+
+class clrs:
+    red = "\033[31m"
+    green = "\033[92m"
+    blue = "\033[34m"
+    end = "\033[0m"
 
 def changeMainWindow():
     # !w!!! Bearbeitbarkeit der rastenTabelle entwernen
