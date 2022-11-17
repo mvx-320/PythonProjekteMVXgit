@@ -25,6 +25,8 @@ import ui1, dialogRast
 # !!! QProgressBar in QTableWidget mit .setCellWidget()
 # !!! Verhindern das man Knöpfe zu häufig drücken kann (oder Arbeitsspeicherüberwachung)
 
+    #test test test(hallihallo)
+
 # Rast Hinzufügen Button gedrückt
 def rastHinzufuegen():
     main.currentID = ui.rastenTabelle.rowCount() + 1
