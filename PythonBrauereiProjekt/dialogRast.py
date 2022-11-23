@@ -188,4 +188,7 @@ if __name__ == "__main__":
     ui = Ui_NeueRastHinzufuegen()
     ui.setupUi(NeueRastHinzufuegen)
     NeueRastHinzufuegen.show()
-    sys.exit(app.exec_())
+    print('homeThread im standbye')
+    app.exec_()
+    print('bye')
+    sys.exit()

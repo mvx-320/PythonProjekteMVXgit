@@ -10,7 +10,6 @@ from datetime import datetime, timedelta
 import main  # Braucht man für currentID
 import ui1, dialogRast
 
-
 # Github Upload:
 # neues Commit erstellen auf Git->Commit...
 # Push (oben rechts) von ThisIsMyBranch -> origin, master
@@ -25,49 +24,68 @@ import ui1, dialogRast
 # !!! QProgressBar in QTableWidget mit .setCellWidget()
 # !!! Verhindern das man Knöpfe zu häufig drücken kann (oder Arbeitsspeicherüberwachung)
 
-# Rast Hinzufügen Button gedrückt
-def rastHinzufuegen():
-    main.currentID = ui.rastenTabelle.rowCount() + 1
-    dialog.positionCoB.clear()
-    for i in range(main.currentID):
-        dialog.positionCoB.addItem(str(i + 1))
-    dialog.positionCoB.setCurrentIndex(main.currentID - 1)
-    dialog.bezeichnungLE.clear()
-    dialog.temperaturLE.clear()
-    dialog.dauerLE.clear()
-    dialog.typCoB.setCurrentIndex(0)
-    dialog.ruehrwerkChB.setCheckState(0)
-    dialog.braurufChB.setCheckState(0)
-    dialog.kommentarTE.clear()
+class BackroundFunktions:
+    @staticmethod
+    def changeMainWindow():
+        # !w!!! Bearbeitbarkeit der rastenTabelle entwernen
+        # !w!!! rastenTabelle bearbeiten mit auswählen und dann vorausgewähltem Feld im Dialogfenster
+        ui.rastenTabelle.setColumnWidth(0, 300)
+        ui.rastenTabelle.setColumnWidth(1, 100)
+        ui.rastenTabelle.setColumnWidth(2, 120)
+        ui.rastenTabelle.setColumnWidth(6, 1000)
+        # !!!Value in QtCreator gesetzt
+        ui.progressBarRast.setValue(0)
+        ui.progressBarGesamt.setValue(0)
+        # !!!Höhe in QtCreator setzen
+        ui.progressBarRast.setFixedHeight(10)
+        ui.progressBarGesamt.setFixedHeight(20)
 
-    NeueRastHinzufuegen.show()
+        ui.meldungRuehrwerk.setMovie(movie)
+        movie.start()
 
-    # !!!!!!! Abchecken ob man neues VericalItem erzeugen muss // Bisher nicht
+    @staticmethod
+    def changeDialog():
+        # !!!!! Größe vom Dialogfenster wieder veränderbar machen // evtl noch kleiner
+        dialog.positionCoB.setCurrentIndex(ui.rastenTabelle.rowCount())
+        # !!!!! Die aktuellen Lehrzeichen müssen entfernt werden // evtl schon draußen
+        dialog.temperaturLE.setAlignment(QtCore.Qt.AlignCenter)
+        dialog.temperaturLE.setInputMask("00")  # D damit die Zahl >0 sein muss
+        dialog.dauerLE.setAlignment(QtCore.Qt.AlignCenter)
+        dialog.dauerLE.setInputMask("000")
 
-
-# Rast Enfernen Button gedrückt
-def rastEntfernen():
-    # timer.resume()
-    if len(rasten_array) > 0:
-        loeschAnfrage = QtWidgets.QMessageBox()
-        loeschAnfrage.setWindowTitle('Rast löschen?')
-        loeschAnfrage.setText('Soll die Rast wirklich gelöscht werden?')
-        pixmap = QtGui.QPixmap("Icons/müll3.png")
-
-        loeschAnfrage.setIconPixmap(pixmap)
-        loeschAnfrage.setStandardButtons(QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No)
-        # loeschAnfrage.setInformativeText('(Rast wird dauerhaft gelöscht)')
-        loeschAnfrage.accepted.connect(Rast.rastLoeschen)
-        msg = loeschAnfrage.exec_()
+    @staticmethod
+    def programmVerlassen():
+        print('Beim Schließen nachfragen')
+        return app.exec_()
 
 
 class Dialog:
+    @staticmethod
+    def dialogAnzeigen():
+        main.currentID = ui.rastenTabelle.rowCount() + 1
+        dialog.positionCoB.clear()
+        for i in range(main.currentID):
+            dialog.positionCoB.addItem(str(i + 1))
+        dialog.positionCoB.setCurrentIndex(main.currentID - 1)
+        dialog.bezeichnungLE.clear()
+        dialog.temperaturLE.clear()
+        dialog.dauerLE.clear()
+        dialog.typCoB.setCurrentIndex(0)
+        dialog.ruehrwerkChB.setCheckState(0)
+        dialog.braurufChB.setCheckState(0)
+        dialog.kommentarTE.clear()
+
+        NeueRastHinzufuegen.show()
+
+        # !!!!!!! Abchecken ob man neues VericalItem erzeugen muss // Bisher nicht
+
     @staticmethod
     def dialogAuslesen():
         #!!! Abfragen ob die Felder befüllt sind
         if dialog.dauerLE.text() == '':
             NeueRastHinzufuegen.show()
             return
+        #!!! temp muss auch ausgefüllt sein
         main.currentID = dialog.positionCoB.currentIndex() + 1
         bezeichnung = dialog.bezeichnungLE.text()
         temperatur = dialog.temperaturLE.text()
@@ -99,15 +117,70 @@ class Rast:
     """
     Klasse in der die Rasten inizialisiert werden
     """
-    def __init__(self, name: str, comment: str, temp: int, time: int, typ: int, agitator: bool, brauruf: bool):
-        self.name = str(name)
-        self.temp = temp
-        self.time = time  # Hier stimmt was nicht
+    def __init__(self, name: str, comment: str, temp: int, duration: int, typ: int, agitator: bool, signal: bool):
+        self.__name = name
+        self.__temp = temp
+        self.__duration = duration
+        self.__typ = typ
+        self.__agitator = agitator
+        self.__signal = signal
+        self.__comment = comment  # !!!evtl. .adjustSize-Methode bei Comment Item
 
-        self.typ = typ
-        self.agitator = agitator
-        self.brauruf = brauruf
-        self.comment = str(comment)  # !!!evtl. .adjustSize-Methode bei Comment Item
+    @property
+    def name(self):
+        return self.__name
+
+    @name.setter
+    def name(self, value: str):
+        self.__name = value
+
+    @property
+    def temp(self):
+        return self.__temp
+
+    @temp.setter
+    def temp(self, value: str):
+        self.__temp = value
+
+    @property
+    def duration(self):
+        return self.__duration
+
+    @duration.setter
+    def duration(self, value: str):
+        self.__duration = value
+
+    @property
+    def typ(self):
+        return self.__typ
+
+    @typ.setter
+    def typ(self, value: str):
+        self.__typ = value
+
+    @property
+    def agitator(self):
+        return self.__agitator
+
+    @agitator.setter
+    def agitator(self, value: str):
+        self.__agitator = value
+
+    @property
+    def signal(self):
+        return self.__signal
+
+    @signal.setter
+    def signal(self, value: str):
+        self.__signal = value
+
+    @property
+    def comment(self):
+        return self.__comment
+
+    @comment.setter
+    def comment(self, value: str):
+        self.__comment = value
 
     @staticmethod
     def tabelleAktualisieren():
@@ -124,7 +197,6 @@ class Rast:
             # print(h)
             for i in range(ui.rastenTabelle.columnCount()):
                 item = QtWidgets.QTableWidgetItem()
-
                 # Blaufärbung bei jeder 2. Zeile
                 if h % 2 == 0:
                     brush = QtGui.QBrush(QtGui.QColor(240, 240, 255))
@@ -137,7 +209,7 @@ class Rast:
                 elif i == 1:
                     item.setText(_translate("MainWindow", str(rasten_array[h].temp) + " °C"))
                 elif i == 2:
-                    item.setText(_translate("MainWindow", str(rasten_array[h].time) + ' min'))
+                    item.setText(_translate("MainWindow", str(rasten_array[h].duration) + ' min'))
                 elif i == 3:
                     if rasten_array[h].typ == 0:
                         item.setText(_translate("MainWindow", 'wärmer'))
@@ -160,7 +232,7 @@ class Rast:
                 if i == 4:
                     boolwert = rasten_array[h].agitator
                 elif i == 5:
-                    boolwert = rasten_array[h].brauruf
+                    boolwert = rasten_array[h].signal
                 else:
                     boolwert = 0
                 if i == 4 or i == 5:
@@ -180,6 +252,8 @@ class Rast:
 
                 ui.rastenTabelle.setItem(h, i, item)
 
+
+
     @staticmethod
     def rastLoeschen():
         r = ui.rastenTabelle.currentRow()
@@ -195,121 +269,176 @@ class Rast:
         # Ausgangsbeschaltung des Raspberrys
         pass
 
-    def getTime(self) -> int:
-        return self.time
 
-
-class Runtime:
+class ButtonFunctions:
+    # Rast Hinzufügen Button gedrückt
     @staticmethod
-    def start():
+    def rastHinzufuegen():
+        Dialog.dialogAnzeigen()
+
+    # Rast Enfernen Button gedrückt
+    @staticmethod
+    def rastEntfernen():
+        # timer.resume()
+        if len(rasten_array) > 0:
+            loeschAnfrage = QtWidgets.QMessageBox()
+            loeschAnfrage.setWindowTitle('Rast löschen?')
+            loeschAnfrage.setText('Soll die Rast wirklich gelöscht werden?')
+            pixmap = QtGui.QPixmap("Icons/müll3.png")
+
+            loeschAnfrage.setIconPixmap(pixmap)
+            loeschAnfrage.setStandardButtons(QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No)
+            # loeschAnfrage.setInformativeText('(Rast wird dauerhaft gelöscht)')
+            loeschAnfrage.accepted.connect(Rast.rastLoeschen)
+            msg = loeschAnfrage.exec_()
+
+    @staticmethod
+    def start(): # Button Start
         # !!!hier Visualisierung in den Runmodus setzen
 
-        for i in range(0, 2):
-            try:
-                Runtime.threadInit(i)
-            except Exception:
-                print(clrs.red + traceback.format_exc() + clrs.end)
-            except:
-                print(clrs.red + traceback.format_exc() + clrs.end)
-            else:
+        try:
+            # ButtonFunctions.threadInit(i)
+            timerThreadI = timerThread(1, 'timer')
+            print(Clrs.green + 'timerThreadI erzeugt\t' + Clrs.end)
 
-                print(clrs.green + 'done: Runtime' + str(i) + '\t' + clrs.end)
+            pidThreadI = pidThread(2, 'pid', 3, 6, 9)
+            print(Clrs.green + 'pidThreadI erzeugt\t' + Clrs.end)
+
+            timerThreadI.signals.progRastMax.connect(ui.progressBarRast.setMaximum)
+            timerThreadI.signals.progRastVal.connect(ui.progressBarRast.setValue)
+            timerThreadI.signals.progGesMax.connect(ui.progressBarGesamt.setMaximum)
+            timerThreadI.signals.progGesVal.connect(ui.progressBarGesamt.setValue)
+            timerThreadI.signals.timeLeft.connect(ui.sollTemp.setText)
+
+            timerThreadI.start()
+            print(Clrs.green + 'timerThreadI gestartet\t' + Clrs.end)
+
+            pidThreadI.start()
+            print(Clrs.green + 'pidThreadI gestartet\t' + Clrs.end)
+
+        except Exception:
+            print(Clrs.red + traceback.format_exc() + Clrs.end)
+
+        except:
+            print(Clrs.red + traceback.format_exc() + Clrs.end)
+        else:
+            print(Clrs.green + 'done: Runtime' + '\t' + Clrs.end)
+
 
 
     @staticmethod
     def threadInit(step: int):
         if step == 0:
-            timerThreadI = timerThread(1, 'timer', 12)
-            print(clrs.green + 'timerThreadI erzeugt\t' + clrs.end)
-            timerThreadI.start()
-            print(clrs.green + 'timerThreadI gestartet\t' + clrs.end)
+           pass
         elif step == 1:
-            pidThreadI = pidThread(2, 'pid', 3, 6, 9)
-            print(clrs.green + 'pidThreadI erzeugt\t' + clrs.end)
-            pidThreadI.start()
-            print(clrs.green + 'pidThreadI gestartet\t' + clrs.end)
-
-    @staticmethod
+           pass
+    @staticmethod # Button Pause
     def pause():
-        #timer.pause()
-        pass
+        #ui.rastenTabelle.setSelection(QtCore.QRect(QtCore.QPoint(0, 1), QtCore.QSize(1, 2))
+        return
 
-    @staticmethod
+
+    @staticmethod # Button Stopp
     def stopp():
         pass
 
     #808 hier war timerRun()
 
 
-    @staticmethod  # Thread
-    def pidRegelung(name):
-        print(name + '-Thread start')
-
-    @staticmethod
-    def time_to_num(time_str):
-        hh, mm, ss = map(int, time_str.split(':'))
-        return ss + 60 * (mm + 60 * hh)
+class timerThreadSuper(QtCore.QObject):
+    progRastMax = QtCore.pyqtSignal(int)
+    progRastVal = QtCore.pyqtSignal(int)
+    progGesMax = QtCore.pyqtSignal(int)
+    progGesVal = QtCore.pyqtSignal(int)
+    timeLeft = QtCore.pyqtSignal(str)
 
 
 class timerThread(Thread):
     """
     Klasse des timer Threads
     """
-    def __init__(self, threadID: int, name: str, time: float):
+
+    def __init__(self, threadID: int, name: str):
         """
         Hier wird das timer Thread Objekt initialisiert
         """
+        super(timerThread, self).__init__(), super(timerThread, self).__init__()
         Thread.__init__(self)
         self.threadID = threadID
         self.name = name
-        self.time = time
+        self.__alive = True
+        self.signals = timerThreadSuper()
 
+    @property
+    def alive(self):
+        return self.__alive
+
+    @alive.setter
+    def alive(self, value: bool):
+        self.__alive = value
+
+    @QtCore.pyqtSlot()
     def run(self) -> None:
-        print(clrs.green + 'timerThread beginnt \t' + clrs.end)
+        print(Clrs.green + 'timerThread beginnt \t' + Clrs.end)
         try:
             print("Starting: " + self.name + "\t")
-            if threadLock.locked():
-                threadLock.release()
-            threadLock.acquire()
+            if threadLock.locked() == False:
+                threadLock.acquire()
 
             if timer.timestarted != None:
                 timer.resume()
             else:
                 timer.start()
 
-
             ges_zeit_min = 0
             for rasten in rasten_array:
-                ges_zeit_min += int(rasten.time)
+                ges_zeit_min += int(rasten.duration)
             ges_zeit_sec = ges_zeit_min * 60
-            ui.progressBarGesamt.setMaximum(ges_zeit_sec)
-            timeIndex = 0
-            rast_zeit_sec = 0
+            #SafetyFunctions.QProgressbarSetMaximum(ui.progressBarGesamt, ges_zeit_sec)
+            self.signals.progGesMax.emit(ges_zeit_sec * 60)
+
+            end_rast_time_sec = 0
             for timeIndex in range(len(rasten_array)):
-                time = (int(rasten_array[timeIndex].time))
-                rast_zeit_sec += time * 60
-                ui.progressBarRast.setMaximum(time * 60)
-                while True:#timer.get() < aktuelleZeit
-                    timeSEC = timer.get()
-                    timeNOW = [int(timeSEC/60)%3600, int(timeSEC)%60, int(timeSEC*10)%10]
-                    ui.progressBarRast.setValue(time * 60 - (ges_zeit_sec - int(timeSEC)))
-                    ui.progressBarGesamt.setValue(int(timeSEC))
-                    ui.sollTemp.setText(str(f'Time: {timeNOW[0]}:{timeNOW[1]}.{timeNOW[2]}'))
-                    #print(str(timeSEC) + ' ' + str(ges_zeit_sec)+ ' ' + str(timeNOW[1]))
-                    if timeSEC > float(rast_zeit_sec):
-                        print(clrs.blue + 'Timer abgelaufen' + clrs.end)
+                try:
+                    current_rast_time_min = (int(rasten_array[timeIndex].duration))
+                    end_rast_time_sec += current_rast_time_min * 60
+                    past_rast_time_sec = end_rast_time_sec - current_rast_time_min * 60
+                    self.signals.progRastMax.emit(current_rast_time_min * 60 * 60)
+                except:
+                    print(Clrs.red + traceback.format_exc() + Clrs.end)
+                    break
+                while self.alive:
+                    timer_sec = timer.get()
+                    timer_sec_list = [int(timer_sec / 60) % 3600, int(timer_sec) % 60, int(timer_sec * 10) % 10]
+                    value_rast_prog = timer_sec - past_rast_time_sec
+                    self.signals.progGesVal.emit(int(timer_sec * 60))
+                    self.signals.progRastVal.emit(int(value_rast_prog * 60))
+                    self.signals.timeLeft.emit(str(f'Time: {timer_sec_list[0]}:{timer_sec_list[1]}.{timer_sec_list[2]}'))
+                    if timer_sec > float(end_rast_time_sec):
+                        print(Clrs.blue + 'Timer abgelaufen' + Clrs.end)
                         break
 
-            timer.timestarted = None
+                    #!!!Fehlermeldungen:
+                    # QObject::setParent: Cannot set parent, new parent is in a different thread
+                    # QWidget::repaint: Recursive repaint detected
+                    # QBackingStore::endPaint() called with active painter; did you forget to destroy it or call QPainter::end() on it?
+                    # Fehlerbehebung: -auf stackoverflow beschrieben. Link in PythonProjekt Ordner Firefox
+                    # Die Q-Klassen dürfen nur vom MainThread beschrieben werden
+                    # -> run-Funktionen der Threads überabeiten. Außerdem außerhalb der Methoden nach Aufrufen sehen
+                    # -> SafetyFunctions QProgressBarSetMaximum muss ebenfalls überarbeitet werden
 
-            threadLock.release()
+
+
+            timer.timestarted = None
+            if threadLock.locked():
+                threadLock.release()
             print("Exiting: " + self.name + "\t")
         except Exception:
-            print(clrs.red + traceback.format_exc() + clrs.end)
+            print(Clrs.red + traceback.format_exc() + Clrs.end)
         except:
-            print(clrs.red + traceback.format_exc() + clrs.end)
+            print(Clrs.red + traceback.format_exc() + Clrs.end)
         else:
-            print(clrs.green + 'done: timerThread' + clrs.end)
+            print(Clrs.green + 'done: timerThread' + Clrs.end)
 
 
 class pidThread(Thread):
@@ -320,23 +449,32 @@ class pidThread(Thread):
         self.pValue = pValue
         self.iValue = iValue
         self.dValue = dValue
+        self.__alive = True
+
+    @property
+    def alive(self):
+        return self.alive
+
+    @alive.setter
+    def alive(self, value: bool):
+        self.alive = value
 
     def run(self) -> None:
-        print(clrs.green + 'pidThread beginnt\t' + clrs.end)
+        print(Clrs.green + 'pidThread beginnt\t' + Clrs.end)
         try:
             print("Starting: " + self.name + "\t")
+            if threadLock.locked() == False:
+                threadLock.acquire()
+            pass
             if threadLock.locked():
                 threadLock.release()
-            threadLock.acquire()
-            time.sleep(7)
-            threadLock.release()
             print("Exiting: " + self.name + "\t")
         except Exception:
-            print(clrs.red + traceback.format_exc() + clrs.end)
+            print(Clrs.red + traceback.format_exc() + Clrs.end)
         except:
-            print(clrs.red + traceback.format_exc() + clrs.end)
+            print(Clrs.red + traceback.format_exc() + Clrs.end)
         else:
-            print(clrs.green + 'done: pidThread' + clrs.end)
+            print(Clrs.green + 'done: pidThread' + Clrs.end)
 
 # Hier ist noch kein Objekt instanziiert
 class MyTimer():
@@ -395,39 +533,12 @@ class MyTimer():
         else:
             return time.time() - self.timestarted
 
-class clrs:
+
+class Clrs:
     red = "\033[31m"
     green = "\033[92m"
     blue = "\033[34m"
     end = "\033[0m"
-
-def changeMainWindow():
-    # !w!!! Bearbeitbarkeit der rastenTabelle entwernen
-    # !w!!! rastenTabelle bearbeiten mit auswählen und dann vorausgewähltem Feld im Dialogfenster
-    ui.rastenTabelle.setColumnWidth(0, 300)
-    ui.rastenTabelle.setColumnWidth(1, 100)
-    ui.rastenTabelle.setColumnWidth(2, 120)
-    ui.rastenTabelle.setColumnWidth(6, 1000)
-    ui.progressBarRast.setFixedHeight(10)
-    ui.progressBarGesamt.setFixedHeight(20)
-
-    ui.meldungRuehrwerk.setMovie(movie)
-    movie.start()
-
-
-def changeDialog():
-    # !!!!! Größe vom Dialogfenster wieder veränderbar machen // evtl noch kleiner
-    dialog.positionCoB.setCurrentIndex(ui.rastenTabelle.rowCount())
-    # !!!!! Die aktuellen Lehrzeichen müssen entfernt werden // evtl schon draußen
-    dialog.temperaturLE.setAlignment(QtCore.Qt.AlignCenter)
-    dialog.temperaturLE.setInputMask("00")  # D damit die Zahl >0 sein muss
-    dialog.dauerLE.setAlignment(QtCore.Qt.AlignCenter)
-    dialog.dauerLE.setInputMask("000")
-
-
-def programmVerlassen():
-    print('Beim Schließen nachfragen')
-    return app.exec_()
 
 
 if __name__ == "__main__":
@@ -442,15 +553,18 @@ if __name__ == "__main__":
     movie = QtGui.QMovie("Icons\\Propeller2.gif")  # nicht in Methode, weil soll noch aufgerufen werden
     movie.setScaledSize(QtCore.QSize(100, 100))
 
-    changeMainWindow()
+    BackroundFunktions.changeMainWindow()
 
     # Initialisierung Kopfverbindung mit Methoden
-    ui.buttonPlay.clicked.connect(Runtime.start)
-    ui.buttonPause.clicked.connect(Runtime.pause)
-    ui.buttonStop.clicked.connect(Runtime.stopp)
+    ui.buttonPlay.clicked.connect(lambda: ButtonFunctions.start())
+    ui.buttonPause.clicked.connect(lambda: ButtonFunctions.pause())
+    ui.buttonStop.clicked.connect(lambda: ButtonFunctions.stopp())
     # !!! noch in Rast Klasse verschieben
-    ui.hinzufuegenB.clicked.connect(rastHinzufuegen)  # .connect darf nicht in "changeMainWindow()" verschoben werden
-    ui.entfernenB.clicked.connect(rastEntfernen)
+    ui.hinzufuegenB.clicked.connect(lambda: ButtonFunctions.rastHinzufuegen())  # .connect darf nicht in "changeMainWindow()" verschoben werden
+    ui.entfernenB.clicked.connect(lambda: ButtonFunctions.rastEntfernen())
+
+
+
 
     # Initialisierung Timer
     timer = MyTimer()
@@ -459,7 +573,7 @@ if __name__ == "__main__":
     NeueRastHinzufuegen = QtWidgets.QDialog()
     dialog = dialogRast.Ui_NeueRastHinzufuegen() # Klasse von dialogRast.py
     dialog.setupUi(NeueRastHinzufuegen)
-    changeDialog()
+    BackroundFunktions.changeDialog()
 
     dialogC = Dialog()
     dialog.dialogButtons.accepted.connect(lambda: dialogC.dialogAuslesen())
@@ -468,5 +582,9 @@ if __name__ == "__main__":
 
     # !!!!!!! Bedingung für Exit // funktioniert noch nicht
     app.exec_()
-    print('hallo')
-    sys.exit()
+    print('bye')
+
+
+    timerThread.alive = False
+    pidThread.alive = False
+    sys.exit(-1)
