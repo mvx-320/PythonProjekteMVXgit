@@ -290,19 +290,20 @@ class ButtonFunctions:
             loeschAnfrage.setStandardButtons(QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No)
             # loeschAnfrage.setInformativeText('(Rast wird dauerhaft gelöscht)')
             loeschAnfrage.accepted.connect(Rast.rastLoeschen)
-            msg = loeschAnfrage.exec_()
+            loeschAnfrage.exec_()
 
     @staticmethod
     def start(): # Button Start
         # !!!hier Visualisierung in den Runmodus setzen
 
         try:
+            timerThread.alive = True
             # ButtonFunctions.threadInit(i)
             timerThreadI = timerThread(1, 'timer')
             print(Clrs.green + 'timerThreadI erzeugt\t' + Clrs.end)
 
             pidThreadI = pidThread(2, 'pid', 3, 6, 9)
-            print(Clrs.green + 'pidThreadI erzeugt\t' + Clrs.end)
+            print(Clrs.cyan + 'pidThreadI erzeugt\t' + Clrs.end)
 
             timerThreadI.signals.progRastMax.connect(ui.progressBarRast.setMaximum)
             timerThreadI.signals.progRastVal.connect(ui.progressBarRast.setValue)
@@ -314,7 +315,7 @@ class ButtonFunctions:
             print(Clrs.green + 'timerThreadI gestartet\t' + Clrs.end)
 
             pidThreadI.start()
-            print(Clrs.green + 'pidThreadI gestartet\t' + Clrs.end)
+            print(Clrs.cyan + 'pidThreadI gestartet\t' + Clrs.end)
 
         except Exception:
             print(Clrs.red + traceback.format_exc() + Clrs.end)
@@ -335,11 +336,18 @@ class ButtonFunctions:
     @staticmethod # Button Pause
     def pause():
         #ui.rastenTabelle.setSelection(QtCore.QRect(QtCore.QPoint(0, 1), QtCore.QSize(1, 2))
+        timer.pause()
         return
 
 
     @staticmethod # Button Stopp
     def stopp():
+        # Funktioniert nicht
+        timerThread.alive = False
+        timer.pause()
+        timer.timestarted = None
+        timer.timepaused = None
+        timer.paused = False
         pass
 
     #808 hier war timerRun()
@@ -381,7 +389,7 @@ class timerThread(Thread):
     def run(self) -> None:
         print(Clrs.green + 'timerThread beginnt \t' + Clrs.end)
         try:
-            print("Starting: " + self.name + "\t")
+            print(Clrs. green + "Starting: " + self.name + "\t" + Clrs.end)
             if threadLock.locked() == False:
                 threadLock.acquire()
 
@@ -432,7 +440,7 @@ class timerThread(Thread):
             timer.timestarted = None
             if threadLock.locked():
                 threadLock.release()
-            print("Exiting: " + self.name + "\t")
+            print(Clrs.green + "Exiting: " + self.name + "\t" + Clrs.end)
         except Exception:
             print(Clrs.red + traceback.format_exc() + Clrs.end)
         except:
@@ -460,21 +468,21 @@ class pidThread(Thread):
         self.alive = value
 
     def run(self) -> None:
-        print(Clrs.green + 'pidThread beginnt\t' + Clrs.end)
+        print(Clrs.cyan + 'pidThread beginnt\t' + Clrs.end)
         try:
-            print("Starting: " + self.name + "\t")
+            print(Clrs.cyan + "Starting: " + self.name + "\t" + Clrs.end)
             if threadLock.locked() == False:
                 threadLock.acquire()
             pass
             if threadLock.locked():
                 threadLock.release()
-            print("Exiting: " + self.name + "\t")
+            print(Clrs.cyan + "Exiting: " + self.name + "\t" + Clrs.cyan)
         except Exception:
             print(Clrs.red + traceback.format_exc() + Clrs.end)
         except:
             print(Clrs.red + traceback.format_exc() + Clrs.end)
         else:
-            print(Clrs.green + 'done: pidThread' + Clrs.end)
+            print(Clrs.cyan + 'done: pidThread' + Clrs.end)
 
 # Hier ist noch kein Objekt instanziiert
 class MyTimer():
@@ -486,37 +494,37 @@ class MyTimer():
     """
 
     def __init__(self):
-        # print('Initializing timer')
+        print(Clrs.magenta + 'Initializing timer' + Clrs.end)
         self.timestarted = None
         self.timepaused = None
         self.paused = False
 
     def start(self):
         """ Starts an internal timer by recording the current time """
-        print("Starting MyTimer\t")
+        print(Clrs.magenta + "Starting MyTimer\t" + Clrs.end)
         self.timestarted = time.time()
 
     def pause(self):
         """ Pauses the timer """
         if self.timestarted is None:
-            print("Timer not started")
+            print(Clrs.red + "Timer not started" + Clrs.end)
             #raise ValueError("Timer not started")
         if self.paused:
-            print("Timer is already paused")
+            print(Clrs.red + "Timer is already paused" + Clrs.end)
             #raise ValueError("Timer is already paused")
-        print('Pausing timer')
+        print(Clrs.magenta + 'Pausing timer' + Clrs.end)
         self.timepaused = time.time()
         self.paused = True
 
     def resume(self):
         """ Resumes the timer by adding the pause time to the start time """
         if self.timestarted is None:
-            print("Timer not started")
+            print(Clrs.red + "Timer not started" + Clrs.end)
             # raise ValueError("Timer not started")
         if not self.paused:
-            print("Timer is not paused")
+            print(Clrs.red + "Timer is not paused" + Clrs.end)
             # raise ValueError("Timer is not paused")
-        print('Resuming timer')
+        print(Clrs.magenta + 'Resuming timer' + Clrs.end)
         pausetime = time.time() - self.timepaused
         self.timestarted = self.timestarted + pausetime
         self.paused = False
@@ -524,9 +532,9 @@ class MyTimer():
     def get(self):
         """ Returns a timedelta object showing the amount of time
             elapsed since the start time, less any pauses """
-        # print('Get timer value')
+        #print(Clrs.magenta + 'Get timer value' + Clrs.end)
         if self.timestarted is None:
-            print("Timer not started")
+            print(Clrs.red + "Timer not started" + Clrs.end)
             #raise ValueError("Timer not started")
         if self.paused:
             return self.timepaused - self.timestarted
@@ -538,6 +546,8 @@ class Clrs:
     red = "\033[31m"
     green = "\033[92m"
     blue = "\033[34m"
+    magenta = "\033[35m"
+    cyan = "\033[36m"
     end = "\033[0m"
 
 
