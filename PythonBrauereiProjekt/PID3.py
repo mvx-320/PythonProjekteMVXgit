@@ -15,7 +15,7 @@ from threading import Thread
 import main
 # Fallnummer JBL: 11092708
 
-class myPID:
+class MyPID:
     err = 0.0
     int = 0.0
 
@@ -26,6 +26,8 @@ class myPID:
         self.kp = kp
         self.ki = ki
         self.kd = kd
+
+        #self.set_temp = None
 
     def run(self, set, act):
         error = set - act
@@ -46,7 +48,9 @@ class myPID:
 
         self.err = error
         return (output)
+
 # --------------------------------------------------------------------------------
+
 class graphThread(Thread):
     def __init__(self, threadID, name):
         Thread.__init__(self)
@@ -64,7 +68,7 @@ class graphThread(Thread):
             print('val:', '{:7.3f}'.format(val), ' inc:', '{:7.3f}'.format(inc))
 
             # Für Simulation (in echt muss val ausgelesen & berechnet werden und inc geschrieben)
-            traegheit = traegheit[1:] + [inc]
+            traegheit = [inc] + traegheit[1:]
             val += traegheit[0]/25
             val -= val / 80
 
@@ -73,23 +77,21 @@ class graphThread(Thread):
             plt.ylim([-20,120])
             plt.xlim([i-10,i+10])
             plt.grid()
-            plt.plot((0,0), (-10,110), color ='black')
+            plt.plot((0,0), (-10,110), color ='black') # Startline
             plt.plot(valGraph, 'b')
             plt.plot(incGraph, 'r')
             plt.draw()
             time.sleep(0.1)
 
-
 # ------------------------------------------------------------------------------
-
-
+def close():
+    print('close')
 if __name__ == '__main__':
     valGraph, incGraph = [], []  # list(range(100))
     plt.plot(valGraph)
-    pid = myPID(0.1, 100, 0, 2.9, 0.3, 0) # dt, max, min, kp, ki, kd 2.7|0.35 | 0.01
-    thread = graphThread(3, 'jürgen')
+    pid = MyPID(0.1, 100, 0, 2.9, 0.3, 0) # dt, max, min, kp, ki, kd 2.7|0.35 | 0.01
+    thread = graphThread(3, 'graphThread')
     thread.start()
     plt.show()
-
-
+    plt.close(close())
 # --------------------------------------------------------------------------

@@ -1,12 +1,13 @@
 import datetime
-import sys
-import threading
-import time
+import sys, time
+import threading # Für .Lock()
 import traceback
 from PyQt5 import QtCore, QtGui, QtWidgets
 from threading import Thread, Timer
 from datetime import datetime, timedelta
-
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.widgets import Slider, Button
 import main  # Braucht man für currentID
 import ui1, dialogRast
 
@@ -20,14 +21,14 @@ import ui1, dialogRast
 # Warum friert bild nach 15min ein || Schreibfehler __init__() warum keine Exception my pyCharm und bei der CMD schon
 
 # !!! Editierbarkeit bei allen Items wie bei Item 0,0
-# !!! Typ entfernen start nach Temperaturannäherung in Einstellungen bearbeitbar
+
 # !!! QProgressBar in QTableWidget mit .setCellWidget()
 # !!! Verhindern das man Knöpfe zu häufig drücken kann (oder Arbeitsspeicherüberwachung)
 
-class BackroundFunktions:
+class BackroundFunctions:
     @staticmethod
     def changeMainWindow():
-        # !w!!! Bearbeitbarkeit der rastenTabelle entwernen
+        # !w!!! Bearbeitbarkeit der rastenTabelle entfernen
         # !w!!! rastenTabelle bearbeiten mit auswählen und dann vorausgewähltem Feld im Dialogfenster
         ui.rastenTabelle.setColumnWidth(0, 300)
         ui.rastenTabelle.setColumnWidth(1, 100)
@@ -57,7 +58,85 @@ class BackroundFunktions:
     def programmVerlassen():
         print('Beim Schließen nachfragen')
         return app.exec_()
+    @staticmethod
+    def setTempPlot(value):
+        set_temp_list.insert(pid.index, value)
+    @staticmethod
+    def curTempPlot(value):
+        cur_temp_list.insert(pid.index, value)
+    @staticmethod
+    def heatValPlot(value):
+        heat_val_list.insert(pid.index, value)
 
+    def getValues(simulation: bool):
+        if simulation is True:
+            # print('getValues()')
+            pid.sim_set_temp = int(set_slider.val)
+            heating_value = pid.PID.run(pid.sim_set_temp, pid.sim_cur_temp)
+            # print('Trägheitsliste: ' + str(pid.sim_traegheit) + '\nHeizwert: ' + str(heating_value))
+            pid.sim_traegheit = pid.sim_traegheit[1:] + [float(
+                heating_value)]  # !!! Hier muss noch herausgefunden werden warum kein wert zurück kommt & wie man sicherstellen kann dass einer da ist
+            # print(pid.sim_traegheit)
+            pid.sim_cur_temp += pid.sim_traegheit[0] / 25
+            if pid.sim_cur_temp > 20:
+                pid.sim_cur_temp -= pid.sim_cur_temp / 80
+            # print('set: ' + str(pid.sim_set_temp) + '\ncur: ' + str(pid.sim_cur_temp) + '\nheat: ' + str(heating_value))
+            print('set: ' + str(pid.sim_set_temp) + '\ncur: ' + str(pid.sim_cur_temp) + '\nheat: ' + str(heating_value))
+            return pid.sim_set_temp, pid.sim_cur_temp, (heating_value * 30 + 500)
+        else:
+            # !!! Hier müssen die Methoden aufgerufen werden die die Werte Soll, Ist & Heat zurückgibt
+            pass
+
+    @staticmethod
+    def interval():
+        # Hier sollen die Wert erausgelesen und erzeugt werden
+        set, cur, heat = BackroundFunctions.getValues(pid.SIM)
+
+        pid.set_plot_y.insert(500 + pid.index, set)
+        pid.cur_plot_y.insert(500 + pid.index, cur)
+        pid.heat_plot_y.insert(500 + pid.index, heat)
+        print('set: ' + str(pid.set_plot_y) + '\ncur: ' + str(pid.cur_plot_y) + '\nheat: ' + str(pid.heat_plot_y) + '\n')
+        pid.index += 1
+        return
+
+    @staticmethod
+    def plot_method():
+
+        fig, ax1 = plt.subplots()
+        fig.set_size_inches(8, 4)
+        # adjust the main plot to make ROOM for the sliders
+        fig.subplots_adjust(left=0.15, bottom=0.25)
+        # Make a horizontal SLIDER to control the viewwidth
+        viewwidth = fig.add_axes([0.15, 0.05, 0.75, 0.03])
+        vw_slider = Slider(ax=viewwidth, label='Sichtweite', valmin=50, valmax=500, valinit=150)
+        # Make a horizontal SLIDER to control the timepoint
+        timepoint = fig.add_axes([0.15, 0.12, 0.75, 0.03])
+        tp_slider = Slider(ax=timepoint, label='Zeitpunkt', valmin=0, valmax=1000,
+                           valinit=1000)  # !!! 2. Slider muss noch den Zeitpunkt verändern
+        # Make a vertical oriented SLIDER to control the set-temperature
+        sim_soll = fig.add_axes([0.04, 0.25, 0.02, 0.58])
+        set_slider = Slider(ax=sim_soll, label='Soll-Temp', valmin=0, valmax=100, valinit=80, orientation='vertical')
+
+        ax1.set_ylabel("Temperatur in °C")  # , color="b")
+        ax1.tick_params(axis="y")  # , labelcolor="b")
+        line_soll, = ax1.plot(pid.set_view_y, 'k')
+        line_ist, = ax1.plot(pid.cur_view_y, 'b')
+
+        ax2 = ax1.twinx()
+
+        ax2.set_ylabel('Heizleistung in W', color='r')
+        ax2.tick_params(axis="y", labelcolor="r")
+        ax2.set_ylim(200, 3800)  # für 500 - 3500 W
+        line_heat, = ax2.plot(pid.heat_view_y, 'r')
+        ax1.legend([line_soll, line_ist, line_heat], ['Soll-Temp', 'Ist-Temp', 'Heizleistung'])
+
+        # print('plot-Button-Methode geht bis hier')
+        ax1.grid()
+        ax1.set_ylim(-10, 110)
+
+        print('Previosshow')
+        plt.show(block=False)  # block= stellt ein ob der Thread angehalten wird oder nicht
+        print('Aftershow')
 
 class Dialog:
     @staticmethod
@@ -70,7 +149,6 @@ class Dialog:
         dialog.bezeichnungLE.clear()
         dialog.temperaturLE.clear()
         dialog.dauerLE.clear()
-        dialog.typCoB.setCurrentIndex(0)
         dialog.ruehrwerkChB.setCheckState(0)
         dialog.braurufChB.setCheckState(0)
         dialog.kommentarTE.clear()
@@ -90,7 +168,6 @@ class Dialog:
         bezeichnung = dialog.bezeichnungLE.text()
         temperatur = dialog.temperaturLE.text()
         dauer = dialog.dauerLE.text()
-        typ = dialog.typCoB.currentIndex()
         if dialog.ruehrwerkChB.checkState() == 2:  # 0 = Unchecked; 2 = Checked
             ruehrwerk = True
         else:
@@ -108,7 +185,7 @@ class Dialog:
             main.currentID = 1
 
         rasten_array.insert(main.currentID - 1,
-                            Rast(bezeichnung, str(kommentar), temperatur, dauer, typ, ruehrwerk, brauruf))
+                            Rast(bezeichnung, str(kommentar), temperatur, dauer, ruehrwerk, brauruf))
 
         Rast.tabelleAktualisieren()
 
@@ -117,11 +194,10 @@ class Rast:
     """
     Klasse in der die Rasten inizialisiert werden
     """
-    def __init__(self, name: str, comment: str, temp: int, duration: int, typ: int, agitator: bool, signal: bool):
+    def __init__(self, name: str, comment: str, temp: int, duration: int, agitator: bool, signal: bool):
         self.__name = name
         self.__temp = temp
         self.__duration = duration
-        self.__typ = typ
         self.__agitator = agitator
         self.__signal = signal
         self.__comment = comment  # !!!evtl. .adjustSize-Methode bei Comment Item
@@ -149,14 +225,6 @@ class Rast:
     @duration.setter
     def duration(self, value: str):
         self.__duration = value
-
-    @property
-    def typ(self):
-        return self.__typ
-
-    @typ.setter
-    def typ(self, value: str):
-        self.__typ = value
 
     @property
     def agitator(self):
@@ -201,7 +269,8 @@ class Rast:
                 if h % 2 == 0:
                     brush = QtGui.QBrush(QtGui.QColor(240, 240, 255))
                     brush.setStyle(QtCore.Qt.SolidPattern)
-                    item.setBackground(brush)
+
+
 
                 # print(rasten_array[h].commet)
                 if i == 0:
@@ -210,32 +279,17 @@ class Rast:
                     item.setText(_translate("MainWindow", str(rasten_array[h].temp) + " °C"))
                 elif i == 2:
                     item.setText(_translate("MainWindow", str(rasten_array[h].duration) + ' min'))
-                elif i == 3:
-                    if rasten_array[h].typ == 0:
-                        item.setText(_translate("MainWindow", 'wärmer'))
-                        brush = QtGui.QBrush(QtGui.QColor(255, 240, 150))
-                    elif rasten_array[h].typ == 1:
-                        item.setText(_translate("MainWindow", 'kälter'))
-                        brush = QtGui.QBrush(QtGui.QColor(180, 180, 240))
-                    elif rasten_array[h].typ == 2:
-                        item.setText(_translate("MainWindow", 'egal'))
-                        brush = QtGui.QBrush(QtGui.QColor(240, 240, 240))
-                    else:
-                        brush = QtGui.QBrush(QtGui.QColor(200, 0, 0))
-                    brush.setStyle(QtCore.Qt.SolidPattern)
-                    item.setBackground(brush)
-
-                elif i == 6:
+                elif i == 5:
                     item.setText(_translate("MainWindow", rasten_array[h].comment))
 
                 # Rührwerk und Meldung (AN/AUS)
-                if i == 4:
+                if i == 3:
                     boolwert = rasten_array[h].agitator
-                elif i == 5:
+                elif i == 4:
                     boolwert = rasten_array[h].signal
                 else:
                     boolwert = 0
-                if i == 4 or i == 5:
+                if i == 3 or i == 4:
                     item.setTextAlignment(QtCore.Qt.AlignCenter)
                     if boolwert:
                         brush = QtGui.QBrush(QtGui.QColor(180, 255, 180))  # grün
@@ -252,6 +306,12 @@ class Rast:
 
                 ui.rastenTabelle.setItem(h, i, item)
 
+        # ProgressBar in TableWidgets
+        probar = QtWidgets.QProgressBar()
+        ui.rastenTabelle.setCellWidget(0,5,probar)
+        probar.setValue(50)
+        probar.setStyleSheet("QProgressBar::chunk {background-color: rgba(0,255,0,70)}")
+        probar.setValue(75)
 
 
     @staticmethod
@@ -302,7 +362,7 @@ class ButtonFunctions:
             timerThreadI = timerThread(1, 'timer')
             print(Clrs.green + 'timerThreadI erzeugt\t' + Clrs.end)
 
-            pidThreadI = pidThread(2, 'pid', 3, 6, 9)
+            #pidThreadI = pidThread(2, 'pid', 3, 6, 9)
             print(Clrs.cyan + 'pidThreadI erzeugt\t' + Clrs.end)
 
             timerThreadI.signals.progRastMax.connect(ui.progressBarRast.setMaximum)
@@ -310,11 +370,13 @@ class ButtonFunctions:
             timerThreadI.signals.progGesMax.connect(ui.progressBarGesamt.setMaximum)
             timerThreadI.signals.progGesVal.connect(ui.progressBarGesamt.setValue)
             timerThreadI.signals.timeLeft.connect(ui.sollTemp.setText)
-
+            print('after connect')
             timerThreadI.start()
+            pid.start()
+            pid.interval.start()
             print(Clrs.green + 'timerThreadI gestartet\t' + Clrs.end)
 
-            pidThreadI.start()
+            #pidThreadI.start()
             print(Clrs.cyan + 'pidThreadI gestartet\t' + Clrs.end)
 
         except Exception:
@@ -349,8 +411,6 @@ class ButtonFunctions:
         timer.timepaused = None
         timer.paused = False
         pass
-
-    #808 hier war timerRun()
 
 
 class timerThreadSuper(QtCore.QObject):
@@ -449,33 +509,86 @@ class timerThread(Thread):
             print(Clrs.green + 'done: timerThread' + Clrs.end)
 
 
+class pidThreadSuper(QtCore.QObject):
+    set_temp = QtCore.pyqtSignal(int)
+    cur_temp = QtCore.pyqtSignal(float)
+    heat_val = QtCore.pyqtSignal(float)
+
+
 class pidThread(Thread):
-    def __init__(self, threadID: int, name: str, pValue: float, iValue: float, dValue: float):
-        Thread.__init__(self)
+    def __init__(self, threadID, name, dt, max, min, kp, ki, kd):
+        super().__init__()
         self.threadID = threadID
         self.name = name
-        self.pValue = pValue
-        self.iValue = iValue
-        self.dValue = dValue
-        self.__alive = True
+        self.PID = MyPID(0.1, 100, 0, 2.9, 0.3, 0) # dt, max, min, kp, ki, kd 2.7|0.35 | 0.01
+        self.signals = pidThreadSuper()
+        self.index = 0
+        self.sim_cur_temp = 20
+        self.sim_set_temp = int(80)
+        self.sim_traegheit = list(np.zeros(5))
+        self.set_view_y = list(np.full(1000, np.nan))
+        self.cur_view_y = list(np.full(1000, np.nan))
+        self.heat_view_y = list(np.full(1000, np.nan))
+        self.set_plot_y = list(np.full(1000, np.nan))
+        self.cur_plot_y = list(np.full(1000, np.nan))
+        self.heat_plot_y = list(np.full(1000, np.nan))
+        self.SIM = True
+        # self.last_set_temp = 0
+        # self.last_cur_temp = 0
+        # self.last_heat_val = 0
+        self.alive = True
+        self.interval = QtCore.QTimer()
 
-    @property
-    def alive(self):
-        return self.alive
-
-    @alive.setter
-    def alive(self, value: bool):
-        self.alive = value
+#Getter und Setter Methoden
+    # @property
+    # def alive(self):
+    #     return self.alive
+    #
+    # @alive.setter
+    # def alive(self, value: bool):
+    #     self.alive = value
 
     def run(self) -> None:
         print(Clrs.cyan + 'pidThread beginnt\t' + Clrs.end)
         try:
             print(Clrs.cyan + "Starting: " + self.name + "\t" + Clrs.end)
-            if threadLock.locked() == False:
-                threadLock.acquire()
-            pass
-            if threadLock.locked():
-                threadLock.release()
+            # if threadLock.locked() == False:
+            #     threadLock.acquire()
+
+            while self.alive:
+                # print('set: ' + str(set) + '\ncur: ' + str(cur) + '\nheat: ' + str(heat))
+
+                # !!! Hier müssen noch die Werte bei Änderung gespeichert werden
+                # if set != pid.last_set_temp:
+                #     self.signals.set_temp.emit(set)
+                #     pid.last_set_temp = set
+                # if cur != pid.last_cur_temp:
+                #     self.signals.cur_temp.emit(cur)
+                #     pid.last_cur_temp = cur
+                # if heat != pid.last_heat_val:
+                #     self.signals.heat_val.emit(heat)
+                #     pid.last_heat_val = heat
+
+                time_point = int(tp_slider.val * (self.index / tp_slider.valmax))
+
+                self.set_view_y = self.set_plot_y[time_point: time_point + 1000]
+                self.cur_view_y = self.cur_plot_y[time_point: time_point + 1000]
+                self.heat_view_y = self.heat_plot_y[time_point: time_point + 1000]
+                time.sleep(5)
+                # print('set: ' + str(self.set_view_y) + '\ncur: ' + str(self.cur_view_y) + '\nheat: ' + str(self.heat_view_y))
+                # !!! Hier müssen davor die arrays noch beschrieben werden
+                line_soll.set_ydata(self.set_view_y)  # set_ydata
+                line_ist.set_ydata(self.cur_view_y)
+                line_heat.set_ydata(self.heat_view_y)
+
+                ax1.set_xlim(500 - int(vw_slider.val), 500 + int(vw_slider.val))  # self.index+1
+
+                fig.canvas.draw_idle()
+
+                time.sleep(0.03)
+
+            # if threadLock.locked():
+            #     threadLock.release()
             print(Clrs.cyan + "Exiting: " + self.name + "\t" + Clrs.cyan)
         except Exception:
             print(Clrs.red + traceback.format_exc() + Clrs.end)
@@ -542,6 +655,39 @@ class MyTimer():
             return time.time() - self.timestarted
 
 
+class MyPID:
+    err = 0.0
+    int = 0.0
+
+    def __init__(self, dt, max, min, kp, ki, kd):
+        self.dt = dt
+        self.max = max
+        self.min = min
+        self.kp = kp
+        self.ki = ki
+        self.kd = kd
+
+    def run(self, set, act):
+        error = set - act
+
+        P = self.kp * error
+
+        self.int += error * self.dt
+        I = self.ki * self.int
+
+        D = self.kd * (error - self.err) / self.dt
+
+        output = P + I + D
+
+        if output > self.max:
+            output = self.max
+        elif output < self.min:
+            output = self.min
+
+        self.err = error
+        return (output)
+
+
 class Clrs:
     red = "\033[31m"
     green = "\033[92m"
@@ -549,6 +695,11 @@ class Clrs:
     magenta = "\033[35m"
     cyan = "\033[36m"
     end = "\033[0m"
+
+#!!! Eingangs- & Ausgangsbeschaltung
+class IO:
+    def __init__(self):
+        pass
 
 
 if __name__ == "__main__":
@@ -563,18 +714,59 @@ if __name__ == "__main__":
     movie = QtGui.QMovie("Icons\\Propeller2.gif")  # nicht in Methode, weil soll noch aufgerufen werden
     movie.setScaledSize(QtCore.QSize(100, 100))
 
-    BackroundFunktions.changeMainWindow()
+    BackroundFunctions.changeMainWindow()
 
     # Initialisierung Kopfverbindung mit Methoden
     ui.buttonPlay.clicked.connect(lambda: ButtonFunctions.start())
     ui.buttonPause.clicked.connect(lambda: ButtonFunctions.pause())
     ui.buttonStop.clicked.connect(lambda: ButtonFunctions.stopp())
+    ui.button_plot.clicked.connect(lambda: BackroundFunctions.plot_method()) # hier wird lambda benötigt
     # !!! noch in Rast Klasse verschieben
     ui.hinzufuegenB.clicked.connect(lambda: ButtonFunctions.rastHinzufuegen())  # .connect darf nicht in "changeMainWindow()" verschoben werden
     ui.entfernenB.clicked.connect(lambda: ButtonFunctions.rastEntfernen())
 
+    pid = pidThread(2, 'pidThread', 0.1, 100, 0, 3, 0.5, 0)
 
+    # Hier sollen die Werte später abgespeichert werden
+    set_temp_list = []
+    cur_temp_list = []
+    heat_val_list = []
 
+    pid.signals.set_temp.connect(BackroundFunctions.setTempPlot)
+    pid.signals.cur_temp.connect(BackroundFunctions.curTempPlot)
+    pid.signals.heat_val.connect(BackroundFunctions.heatValPlot)
+
+    # Plotten in methode verschieben
+
+    # Create the figure
+
+    # fig, ax1 = plt.subplots()
+    # fig.set_size_inches(8, 4)
+    # # adjust the main plot to make ROOM for the sliders
+    # fig.subplots_adjust(left=0.15, bottom=0.25)
+    # # Make a horizontal SLIDER to control the viewwidth
+    # viewwidth = fig.add_axes([0.15, 0.05, 0.75, 0.03])
+    # vw_slider = Slider(ax=viewwidth, label='Sichtweite', valmin=50, valmax=500, valinit=150)
+    # # Make a horizontal SLIDER to control the timepoint
+    # timepoint = fig.add_axes([0.15, 0.12, 0.75, 0.03])
+    # tp_slider = Slider(ax=timepoint, label='Zeitpunkt', valmin=0, valmax=1000,
+    #                    valinit=1000)  # !!! 2. Slider muss noch den Zeitpunkt verändern
+    # # Make a vertical oriented SLIDER to control the set-temperature
+    # sim_soll = fig.add_axes([0.04, 0.25, 0.02, 0.58])
+    # set_slider = Slider(ax=sim_soll, label='Soll-Temp', valmin=0, valmax=100, valinit=80, orientation='vertical')
+
+    # line_soll, = ax1.plot(list(np.full(1000, np.nan)), 'k')
+    # line_ist, = ax1.plot(list(np.full(1000, np.nan)), 'b')
+    # ax2 = ax1.twinx()
+    # line_heat, = ax2.plot(list(np.full(1000, np.nan)), 'r')
+
+    # BackroundFunctions.plot_method()
+    # pid.start()
+    # pid.interval.start()
+    pid.interval.timeout.connect(lambda: BackroundFunctions.interval())
+    pid.interval.setInterval(500)  # 3000ms
+
+    # muss mit Plot von main-Thread in Button-Func ausgeführt werden
 
     # Initialisierung Timer
     timer = MyTimer()
@@ -583,7 +775,7 @@ if __name__ == "__main__":
     NeueRastHinzufuegen = QtWidgets.QDialog()
     dialog = dialogRast.Ui_NeueRastHinzufuegen() # Klasse von dialogRast.py
     dialog.setupUi(NeueRastHinzufuegen)
-    BackroundFunktions.changeDialog()
+    BackroundFunctions.changeDialog()
 
     dialogC = Dialog()
     dialog.dialogButtons.accepted.connect(lambda: dialogC.dialogAuslesen())
@@ -596,5 +788,5 @@ if __name__ == "__main__":
 
 
     timerThread.alive = False
-    pidThread.alive = False
-    sys.exit(-1)
+    pid.alive = False
+    sys.exit(0)
