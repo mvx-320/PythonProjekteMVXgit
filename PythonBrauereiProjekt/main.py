@@ -59,84 +59,47 @@ class BackroundFunctions:
         print('Beim Schließen nachfragen')
         return app.exec_()
     @staticmethod
-    def setTempPlot(value):
-        set_temp_list.insert(pid.index, value)
+    def get_set_temp():
+        # Die muss aus der Rast abgefragt werden
+        return 80
     @staticmethod
-    def curTempPlot(value):
-        cur_temp_list.insert(pid.index, value)
-    @staticmethod
-    def heatValPlot(value):
-        heat_val_list.insert(pid.index, value)
+    def get_cur_temp():
+        # Wird die Sensorabfrage eingefügt
+        return 20
+    # Evtl überflüßig
+    # @staticmethod
+    # def heatValPlot(value):
+    #     heat_val_list.insert(pid.index, value)
 
-    def getValues(simulation: bool):
-        if simulation is True:
-            # print('getValues()')
-            pid.sim_set_temp = int(set_slider.val)
-            heating_value = pid.PID.run(pid.sim_set_temp, pid.sim_cur_temp)
-            # print('Trägheitsliste: ' + str(pid.sim_traegheit) + '\nHeizwert: ' + str(heating_value))
-            pid.sim_traegheit = pid.sim_traegheit[1:] + [float(
-                heating_value)]  # !!! Hier muss noch herausgefunden werden warum kein wert zurück kommt & wie man sicherstellen kann dass einer da ist
-            # print(pid.sim_traegheit)
-            pid.sim_cur_temp += pid.sim_traegheit[0] / 25
-            if pid.sim_cur_temp > 20:
-                pid.sim_cur_temp -= pid.sim_cur_temp / 80
-            # print('set: ' + str(pid.sim_set_temp) + '\ncur: ' + str(pid.sim_cur_temp) + '\nheat: ' + str(heating_value))
-            print('set: ' + str(pid.sim_set_temp) + '\ncur: ' + str(pid.sim_cur_temp) + '\nheat: ' + str(heating_value))
-            return pid.sim_set_temp, pid.sim_cur_temp, (heating_value * 30 + 500)
-        else:
-            # !!! Hier müssen die Methoden aufgerufen werden die die Werte Soll, Ist & Heat zurückgibt
-            pass
+    @staticmethod
+    def getValues():
+        # print('getValues()')
+        pid.sim_set_temp = int(BackroundFunctions.get_set_temp())
+        # Hier wird der PID-Regler angesteuert
+        heating_value = pid.run(BackroundFunctions.get_set_temp(), BackroundFunctions.get_cur_temp())
+        # print('Trägheitsliste: ' + str(pid.sim_traegheit) + '\nHeizwert: ' + str(heating_value))
+
+        # Das hier war für die Simulation
+        # pid.sim_traegheit = pid.sim_traegheit[1:] + [float(heating_value)]  # !!! Hier muss noch herausgefunden werden warum kein wert zurück kommt & wie man sicherstellen kann dass einer da ist
+        # pid.sim_cur_temp += pid.sim_traegheit[0] / 25
+        # if pid.sim_cur_temp > 20:
+        #     pid.sim_cur_temp -= pid.sim_cur_temp / 80
+
+        return pid.sim_set_temp, pid.sim_cur_temp, (heating_value * 30 + 500)
+
 
     @staticmethod
     def interval():
         # Hier sollen die Wert erausgelesen und erzeugt werden
-        set, cur, heat = BackroundFunctions.getValues(pid.SIM)
+        set, cur, heat = BackroundFunctions.getValues()
 
         pid.set_plot_y.insert(500 + pid.index, set)
         pid.cur_plot_y.insert(500 + pid.index, cur)
         pid.heat_plot_y.insert(500 + pid.index, heat)
-        print('set: ' + str(pid.set_plot_y) + '\ncur: ' + str(pid.cur_plot_y) + '\nheat: ' + str(pid.heat_plot_y) + '\n')
+        #print('set: ' + str(pid.set_plot_y) + '\ncur: ' + str(pid.cur_plot_y) + '\nheat: ' + str(pid.heat_plot_y) + '\n')
         pid.index += 1
         return
 
-    @staticmethod
-    def plot_method():
-
-        fig, ax1 = plt.subplots()
-        fig.set_size_inches(8, 4)
-        # adjust the main plot to make ROOM for the sliders
-        fig.subplots_adjust(left=0.15, bottom=0.25)
-        # Make a horizontal SLIDER to control the viewwidth
-        viewwidth = fig.add_axes([0.15, 0.05, 0.75, 0.03])
-        vw_slider = Slider(ax=viewwidth, label='Sichtweite', valmin=50, valmax=500, valinit=150)
-        # Make a horizontal SLIDER to control the timepoint
-        timepoint = fig.add_axes([0.15, 0.12, 0.75, 0.03])
-        tp_slider = Slider(ax=timepoint, label='Zeitpunkt', valmin=0, valmax=1000,
-                           valinit=1000)  # !!! 2. Slider muss noch den Zeitpunkt verändern
-        # Make a vertical oriented SLIDER to control the set-temperature
-        sim_soll = fig.add_axes([0.04, 0.25, 0.02, 0.58])
-        set_slider = Slider(ax=sim_soll, label='Soll-Temp', valmin=0, valmax=100, valinit=80, orientation='vertical')
-
-        ax1.set_ylabel("Temperatur in °C")  # , color="b")
-        ax1.tick_params(axis="y")  # , labelcolor="b")
-        line_soll, = ax1.plot(pid.set_view_y, 'k')
-        line_ist, = ax1.plot(pid.cur_view_y, 'b')
-
-        ax2 = ax1.twinx()
-
-        ax2.set_ylabel('Heizleistung in W', color='r')
-        ax2.tick_params(axis="y", labelcolor="r")
-        ax2.set_ylim(200, 3800)  # für 500 - 3500 W
-        line_heat, = ax2.plot(pid.heat_view_y, 'r')
-        ax1.legend([line_soll, line_ist, line_heat], ['Soll-Temp', 'Ist-Temp', 'Heizleistung'])
-
-        # print('plot-Button-Methode geht bis hier')
-        ax1.grid()
-        ax1.set_ylim(-10, 110)
-
-        print('Previosshow')
-        plt.show(block=False)  # block= stellt ein ob der Thread angehalten wird oder nicht
-        print('Aftershow')
 
 class Dialog:
     @staticmethod
@@ -330,7 +293,15 @@ class Rast:
         pass
 
 
-class ButtonFunctions:
+class Btn_Func:
+    vw_slider = None
+    tp_slider = None
+    line_soll, = [None]
+    line_ist, = [None]
+    line_heat, = [None]
+    ax1 = None
+    ax2 = None
+    fig = None
     # Rast Hinzufügen Button gedrückt
     @staticmethod
     def rastHinzufuegen():
@@ -371,8 +342,9 @@ class ButtonFunctions:
             timerThreadI.signals.progGesVal.connect(ui.progressBarGesamt.setValue)
             timerThreadI.signals.timeLeft.connect(ui.sollTemp.setText)
             print('after connect')
+            ui.button_plot.setEnabled(True)
             timerThreadI.start()
-            pid.start()
+            # pid.start()
             pid.interval.start()
             print(Clrs.green + 'timerThreadI gestartet\t' + Clrs.end)
 
@@ -387,8 +359,6 @@ class ButtonFunctions:
         else:
             print(Clrs.green + 'done: Runtime' + '\t' + Clrs.end)
 
-
-
     @staticmethod
     def threadInit(step: int):
         if step == 0:
@@ -401,7 +371,6 @@ class ButtonFunctions:
         timer.pause()
         return
 
-
     @staticmethod # Button Stopp
     def stopp():
         # Funktioniert nicht
@@ -410,7 +379,53 @@ class ButtonFunctions:
         timer.timestarted = None
         timer.timepaused = None
         timer.paused = False
+        ui.button_plot.setDisabled(True)
         pass
+
+    @staticmethod
+    def plot_method():
+        try:
+
+
+            Btn_Func.fig, Btn_Func.ax1 = plt.subplots()
+            Btn_Func.fig.set_size_inches(8, 4)
+            # adjust the main plot to make ROOM for the sliders
+            Btn_Func.fig.subplots_adjust(bottom=0.25)
+            # Make a horizontal SLIDER to control the viewwidth
+            vw_slider_size = Btn_Func.fig.add_axes([0.15, 0.05, 0.75, 0.03])
+            Btn_Func.vw_slider = Slider(ax=vw_slider_size, label='Sichtweite', valmin=50, valmax=500, valinit=150)
+            # Make a horizontal SLIDER to control the timepoint
+            tp_slider_size = Btn_Func.fig.add_axes([0.15, 0.12, 0.75, 0.03])
+            Btn_Func.tp_slider = Slider(ax=tp_slider_size, label='Zeitpunkt', valmin=0, valmax=1000,
+                                        valinit=1000)  # !!! 2. Slider muss noch den Zeitpunkt verändern
+
+            Btn_Func.ax1.set_ylabel("Temperatur in °C")  # , color="b")
+            Btn_Func.ax1.tick_params(axis="y")  # , labelcolor="b")
+            Btn_Func.line_soll, = Btn_Func.ax1.plot(pid.set_view_y, 'k')
+            Btn_Func.line_ist, = Btn_Func.ax1.plot(pid.cur_view_y, 'b')
+
+            Btn_Func.ax2 = Btn_Func.ax1.twinx()
+
+            Btn_Func.ax2.set_ylabel('Heizleistung in W', color='r')
+            Btn_Func.ax2.tick_params(axis="y", labelcolor="r")
+            Btn_Func.ax2.set_ylim(200, 3800)  # für 500 - 3500 W
+            Btn_Func.line_heat, = Btn_Func.ax2.plot(pid.heat_view_y, 'r')
+            Btn_Func.ax1.legend([Btn_Func.line_soll, Btn_Func.line_ist, Btn_Func.line_heat], ['Soll-Temp', 'Ist-Temp', 'Heizleistung'])
+
+            # print('plot-Button-Methode geht bis hier')
+            Btn_Func.ax1.grid()
+            Btn_Func.ax1.set_ylim(-10, 110)
+
+            plotThread.alive = True
+            plotThreadI = plotThread(2, 'plot')
+            plotThreadI.start()
+
+            print('Previosshow')
+            plt.show(block=False)  # block= stellt ein ob der Thread angehalten wird oder nicht
+            print('Aftershow')
+        except:
+            print(Clrs.red + traceback.format_exc() + Clrs.end)
+
 
 
 class timerThreadSuper(QtCore.QObject):
@@ -509,44 +524,28 @@ class timerThread(Thread):
             print(Clrs.green + 'done: timerThread' + Clrs.end)
 
 
-class pidThreadSuper(QtCore.QObject):
-    set_temp = QtCore.pyqtSignal(int)
-    cur_temp = QtCore.pyqtSignal(float)
-    heat_val = QtCore.pyqtSignal(float)
+# class plotThreadSuper(QtCore.QObject):
+#     set_temp = QtCore.pyqtSignal(int)
+#     cur_temp = QtCore.pyqtSignal(float)
+#     heat_val = QtCore.pyqtSignal(float)
 
 
-class pidThread(Thread):
-    def __init__(self, threadID, name, dt, max, min, kp, ki, kd):
+class plotThread(Thread):
+    def __init__(self, threadID, name):
         super().__init__()
         self.threadID = threadID
         self.name = name
-        self.PID = MyPID(0.1, 100, 0, 2.9, 0.3, 0) # dt, max, min, kp, ki, kd 2.7|0.35 | 0.01
-        self.signals = pidThreadSuper()
-        self.index = 0
-        self.sim_cur_temp = 20
-        self.sim_set_temp = int(80)
-        self.sim_traegheit = list(np.zeros(5))
-        self.set_view_y = list(np.full(1000, np.nan))
-        self.cur_view_y = list(np.full(1000, np.nan))
-        self.heat_view_y = list(np.full(1000, np.nan))
-        self.set_plot_y = list(np.full(1000, np.nan))
-        self.cur_plot_y = list(np.full(1000, np.nan))
-        self.heat_plot_y = list(np.full(1000, np.nan))
-        self.SIM = True
-        # self.last_set_temp = 0
-        # self.last_cur_temp = 0
-        # self.last_heat_val = 0
-        self.alive = True
-        self.interval = QtCore.QTimer()
+        #self.signals = plotThreadSuper()
+        self.__alive = True
 
-#Getter und Setter Methoden
-    # @property
-    # def alive(self):
-    #     return self.alive
-    #
-    # @alive.setter
-    # def alive(self, value: bool):
-    #     self.alive = value
+    # Getter und Setter Methoden (evtl. um alive ganz am Ende mit dem Klassennamen auf False zu setzen)
+    @property
+    def alive(self):
+        return self.__alive
+
+    @alive.setter
+    def alive(self, value: bool):
+        self.__alive = value
 
     def run(self) -> None:
         print(Clrs.cyan + 'pidThread beginnt\t' + Clrs.end)
@@ -554,7 +553,6 @@ class pidThread(Thread):
             print(Clrs.cyan + "Starting: " + self.name + "\t" + Clrs.end)
             # if threadLock.locked() == False:
             #     threadLock.acquire()
-
             while self.alive:
                 # print('set: ' + str(set) + '\ncur: ' + str(cur) + '\nheat: ' + str(heat))
 
@@ -568,22 +566,32 @@ class pidThread(Thread):
                 # if heat != pid.last_heat_val:
                 #     self.signals.heat_val.emit(heat)
                 #     pid.last_heat_val = heat
+                try:
+                    plt.ion()
 
-                time_point = int(tp_slider.val * (self.index / tp_slider.valmax))
+                    time_point = int(Btn_Func.tp_slider.val * (pid.index / Btn_Func.tp_slider.valmax))
 
-                self.set_view_y = self.set_plot_y[time_point: time_point + 1000]
-                self.cur_view_y = self.cur_plot_y[time_point: time_point + 1000]
-                self.heat_view_y = self.heat_plot_y[time_point: time_point + 1000]
-                time.sleep(5)
-                # print('set: ' + str(self.set_view_y) + '\ncur: ' + str(self.cur_view_y) + '\nheat: ' + str(self.heat_view_y))
-                # !!! Hier müssen davor die arrays noch beschrieben werden
-                line_soll.set_ydata(self.set_view_y)  # set_ydata
-                line_ist.set_ydata(self.cur_view_y)
-                line_heat.set_ydata(self.heat_view_y)
+                    pid.set_view_y = pid.set_plot_y[time_point: time_point + 1000]
+                    pid.cur_view_y = pid.cur_plot_y[time_point: time_point + 1000]
+                    pid.heat_view_y = pid.heat_plot_y[time_point: time_point + 1000]
+                    #time.sleep(5)
+                    # print('set: ' + str(self.set_view_y) + '\ncur: ' + str(self.cur_view_y) + '\nheat: ' + str(self.heat_view_y))
+                    # !!! Hier müssen davor die arrays noch beschrieben werden
+                    Btn_Func.line_soll.set_ydata(pid.set_view_y)  # set_ydata
+                    Btn_Func.line_ist.set_ydata(pid.cur_view_y)
+                    Btn_Func.line_heat.set_ydata(pid.heat_view_y)
 
-                ax1.set_xlim(500 - int(vw_slider.val), 500 + int(vw_slider.val))  # self.index+1
+                    Btn_Func.ax1.set_xlim(500 - int(Btn_Func.vw_slider.val), 500 + int(Btn_Func.vw_slider.val))  # self.index+1
 
-                fig.canvas.draw_idle()
+                    # Draw benötigt zu viel Arbeitsspeicher
+                    # Btn_Func.fig.canvas.flush_events()
+                    #Btn_Func.fig.canvas.clear()
+                    #renderer = Btn_Func.fig.canvas.renderer
+                    Btn_Func.fig.canvas.draw()
+
+
+                except:
+                    print(Clrs.red + traceback.format_exc() + Clrs.end)
 
                 time.sleep(0.03)
 
@@ -666,6 +674,21 @@ class MyPID:
         self.kp = kp
         self.ki = ki
         self.kd = kd
+        self.interval = QtCore.QTimer()
+        self.index = 0
+        self.sim_cur_temp = 20
+        self.sim_set_temp = int(80)
+        #self.sim_traegheit = list(np.zeros(5))
+        self.set_view_y = list(np.full(1000, np.nan))#Hier evtl mal None statt np.nan ausprobieren (kommt drauf an ob man None plotten kann)
+        self.cur_view_y = list(np.full(1000, np.nan))
+        self.heat_view_y = list(np.full(1000, np.nan))
+        self.set_plot_y = list(np.full(1000, np.nan))
+        self.cur_plot_y = list(np.full(1000, np.nan))
+        self.heat_plot_y = list(np.full(1000, np.nan))
+        # self.SIM = True
+        # self.last_set_temp = 0
+        # self.last_cur_temp = 0
+        # self.last_heat_val = 0
 
     def run(self, set, act):
         error = set - act
@@ -717,24 +740,20 @@ if __name__ == "__main__":
     BackroundFunctions.changeMainWindow()
 
     # Initialisierung Kopfverbindung mit Methoden
-    ui.buttonPlay.clicked.connect(lambda: ButtonFunctions.start())
-    ui.buttonPause.clicked.connect(lambda: ButtonFunctions.pause())
-    ui.buttonStop.clicked.connect(lambda: ButtonFunctions.stopp())
-    ui.button_plot.clicked.connect(lambda: BackroundFunctions.plot_method()) # hier wird lambda benötigt
+    ui.buttonPlay.clicked.connect(lambda: Btn_Func.start())
+    ui.buttonPause.clicked.connect(lambda: Btn_Func.pause())
+    ui.buttonStop.clicked.connect(lambda: Btn_Func.stopp())
+    ui.button_plot.clicked.connect(lambda: Btn_Func.plot_method()) # hier wird lambda benötigt
     # !!! noch in Rast Klasse verschieben
-    ui.hinzufuegenB.clicked.connect(lambda: ButtonFunctions.rastHinzufuegen())  # .connect darf nicht in "changeMainWindow()" verschoben werden
-    ui.entfernenB.clicked.connect(lambda: ButtonFunctions.rastEntfernen())
+    ui.hinzufuegenB.clicked.connect(lambda: Btn_Func.rastHinzufuegen())  # .connect darf nicht in "changeMainWindow()" verschoben werden
+    ui.entfernenB.clicked.connect(lambda: Btn_Func.rastEntfernen())
+    ui.button_plot.setDisabled(True)
+    pid = MyPID(0.1, 100, 0, 2.9, 0.3, 0) # dt, max, min, kp, ki, kd 2.7|0.35 | 0.01
 
-    pid = pidThread(2, 'pidThread', 0.1, 100, 0, 3, 0.5, 0)
-
-    # Hier sollen die Werte später abgespeichert werden
-    set_temp_list = []
-    cur_temp_list = []
-    heat_val_list = []
-
-    pid.signals.set_temp.connect(BackroundFunctions.setTempPlot)
-    pid.signals.cur_temp.connect(BackroundFunctions.curTempPlot)
-    pid.signals.heat_val.connect(BackroundFunctions.heatValPlot)
+    # Wird evtl überflüssig
+    # pid.signals.set_temp.connect(BackroundFunctions.setTempPlot)
+    # pid.signals.cur_temp.connect(BackroundFunctions.curTempPlot)
+    # pid.signals.heat_val.connect(BackroundFunctions.heatValPlot)
 
     # Plotten in methode verschieben
 
@@ -764,7 +783,7 @@ if __name__ == "__main__":
     # pid.start()
     # pid.interval.start()
     pid.interval.timeout.connect(lambda: BackroundFunctions.interval())
-    pid.interval.setInterval(500)  # 3000ms
+    pid.interval.setInterval(2000)  # 3000ms
 
     # muss mit Plot von main-Thread in Button-Func ausgeführt werden
 
@@ -788,5 +807,5 @@ if __name__ == "__main__":
 
 
     timerThread.alive = False
-    pid.alive = False
+    plotThread.alive = False
     sys.exit(0)
