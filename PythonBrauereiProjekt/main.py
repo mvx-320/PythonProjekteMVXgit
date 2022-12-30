@@ -10,6 +10,10 @@ import matplotlib.pyplot as plt
 from matplotlib.widgets import Slider, Button
 import main  # Braucht man für currentID
 import ui1, dialogRast
+from concurrent.futures import ProcessPoolExecutor
+import asyncio
+from multiprocessing import Process
+
 
 # Github Upload:
 # neues Commit erstellen auf Git->Commit...
@@ -26,6 +30,7 @@ import ui1, dialogRast
 # !!! Verhindern das man Knöpfe zu häufig drücken kann (oder Arbeitsspeicherüberwachung)
 
 class BackroundFunctions:
+    process_alive = None
     @staticmethod
     def changeMainWindow():
         # !w!!! Bearbeitbarkeit der rastenTabelle entfernen
@@ -99,6 +104,69 @@ class BackroundFunctions:
         #print('set: ' + str(pid.set_plot_y) + '\ncur: ' + str(pid.cur_plot_y) + '\nheat: ' + str(pid.heat_plot_y) + '\n')
         pid.index += 1
         return
+
+    @staticmethod
+    def plot():
+        print(Clrs.cyan + 'pidThread beginnt\t' + Clrs.end)
+        try:
+            #print(Clrs.cyan + "Starting: " + self.name + "\t" + Clrs.end)
+            # if threadLock.locked() == False:
+            #     threadLock.acquire()
+            print('process_alive = ' + str(BackroundFunctions.process_alive))
+            while True:#BackroundFunctions.process_alive ==
+                print(BackroundFunctions.process_alive)
+                print('progress present')
+                # print('set: ' + str(set) + '\ncur: ' + str(cur) + '\nheat: ' + str(heat))
+
+                # !!! Hier müssen noch die Werte bei Änderung gespeichert werden
+                # if set != pid.last_set_temp:
+                #     self.signals.set_temp.emit(set)
+                #     pid.last_set_temp = set
+                # if cur != pid.last_cur_temp:
+                #     self.signals.cur_temp.emit(cur)
+                #     pid.last_cur_temp = cur
+                # if heat != pid.last_heat_val:
+                #     self.signals.heat_val.emit(heat)
+                #     pid.last_heat_val = heat
+                try:
+                    plt.ion()
+
+                    time_point = int(tp_slider.val * (pid.index / tp_slider.valmax))
+
+                    pid.set_view_y = pid.set_plot_y[time_point: time_point + 1000]
+                    pid.cur_view_y = pid.cur_plot_y[time_point: time_point + 1000]
+                    pid.heat_view_y = pid.heat_plot_y[time_point: time_point + 1000]
+                    #time.sleep(5)
+                    # print('set: ' + str(self.set_view_y) + '\ncur: ' + str(self.cur_view_y) + '\nheat: ' + str(self.heat_view_y))
+                    # !!! Hier müssen davor die arrays noch beschrieben werden
+                    print('set: ' + str(pid.set_view_y) + '\ncur: ' + str(pid.cur_view_y) + '\nheat: ' + str(pid.heat_view_y) + '\n')
+                    line_soll.set_ydata(pid.set_view_y)  # set_ydata
+                    line_ist.set_ydata(pid.cur_view_y)
+                    line_heat.set_ydata(pid.heat_view_y)
+
+                    ax1.set_xlim(500 - int(vw_slider.val), 500 + int(vw_slider.val))  # self.index+1
+                    #print(matplotlib.get_backend())
+                    # Draw benötigt zu viel Arbeitsspeicher
+                    # fig.canvas.flush_events()
+                    #Btn_Func.fig.canvas.clear()
+                    #renderer = Btn_Func.fig.canvas.renderer
+
+                    fig.canvas.draw()
+                    fig.canvas.flush_events()
+
+
+                except:
+                    print(Clrs.red + traceback.format_exc() + Clrs.end)
+
+                time.sleep(0.5)
+
+            # if threadLock.locked():
+            #     threadLock.release()
+
+        except:
+            print(Clrs.red + traceback.format_exc() + Clrs.end)
+        else:
+            print(Clrs.cyan + 'done: pidThread' + Clrs.end)
 
 
 class Dialog:
@@ -294,14 +362,7 @@ class Rast:
 
 
 class Btn_Func:
-    vw_slider = None
-    tp_slider = None
-    line_soll, = [None]
-    line_ist, = [None]
-    line_heat, = [None]
-    ax1 = None
-    ax2 = None
-    fig = None
+
     # Rast Hinzufügen Button gedrückt
     @staticmethod
     def rastHinzufuegen():
@@ -382,43 +443,61 @@ class Btn_Func:
         ui.button_plot.setDisabled(True)
         pass
 
+
+    @staticmethod
+    def start_process_plot():
+        executor.start()
+
+
     @staticmethod
     def plot_method():
         try:
+            global fig
+            global ax1
+            global ax2
+            global vw_slider
+            global tp_slider
+            global line_soll
+            global line_ist
+            global line_heat
 
-
-            Btn_Func.fig, Btn_Func.ax1 = plt.subplots()
-            Btn_Func.fig.set_size_inches(8, 4)
+            # Btn_Func.fig, Btn_Func.ax1 = plt.subplots()
+            fig = plt.figure()
+            ax1 = fig.add_subplot(111)
+            fig.set_size_inches(8, 4)
             # adjust the main plot to make ROOM for the sliders
-            Btn_Func.fig.subplots_adjust(bottom=0.25)
+            fig.subplots_adjust(bottom=0.25)
             # Make a horizontal SLIDER to control the viewwidth
-            vw_slider_size = Btn_Func.fig.add_axes([0.15, 0.05, 0.75, 0.03])
-            Btn_Func.vw_slider = Slider(ax=vw_slider_size, label='Sichtweite', valmin=50, valmax=500, valinit=150)
+            vw_slider_size = fig.add_axes([0.15, 0.05, 0.75, 0.03])
+            vw_slider = Slider(ax=vw_slider_size, label='Sichtweite', valmin=50, valmax=500, valinit=150)
             # Make a horizontal SLIDER to control the timepoint
-            tp_slider_size = Btn_Func.fig.add_axes([0.15, 0.12, 0.75, 0.03])
-            Btn_Func.tp_slider = Slider(ax=tp_slider_size, label='Zeitpunkt', valmin=0, valmax=1000,
+            tp_slider_size = fig.add_axes([0.15, 0.12, 0.75, 0.03])
+            tp_slider = Slider(ax=tp_slider_size, label='Zeitpunkt', valmin=0, valmax=1000,
                                         valinit=1000)  # !!! 2. Slider muss noch den Zeitpunkt verändern
 
-            Btn_Func.ax1.set_ylabel("Temperatur in °C")  # , color="b")
-            Btn_Func.ax1.tick_params(axis="y")  # , labelcolor="b")
-            Btn_Func.line_soll, = Btn_Func.ax1.plot(pid.set_view_y, 'k')
-            Btn_Func.line_ist, = Btn_Func.ax1.plot(pid.cur_view_y, 'b')
+            ax1.set_ylabel("Temperatur in °C")  # , color="b")
+            ax1.tick_params(axis="y")  # , labelcolor="b")
+            line_soll, = ax1.plot(np.linspace(0,30,1000), 'k')# pid.set_view_y
+            line_ist, = ax1.plot(np.linspace(30,60,1000), 'b')#pid.cur_view_y
 
-            Btn_Func.ax2 = Btn_Func.ax1.twinx()
+            ax2 = ax1.twinx()
 
-            Btn_Func.ax2.set_ylabel('Heizleistung in W', color='r')
-            Btn_Func.ax2.tick_params(axis="y", labelcolor="r")
-            Btn_Func.ax2.set_ylim(200, 3800)  # für 500 - 3500 W
-            Btn_Func.line_heat, = Btn_Func.ax2.plot(pid.heat_view_y, 'r')
-            Btn_Func.ax1.legend([Btn_Func.line_soll, Btn_Func.line_ist, Btn_Func.line_heat], ['Soll-Temp', 'Ist-Temp', 'Heizleistung'])
+            ax2.set_ylabel('Heizleistung in W', color='r')
+            ax2.tick_params(axis="y", labelcolor="r")
+            ax2.set_ylim(200, 3800)  # für 500 - 3500 W
+            line_heat, = ax2.plot(np.linspace(60,90,1000), 'r')#pid.heat_view_y
+            ax1.legend([line_soll, line_ist, line_heat], ['Soll-Temp', 'Ist-Temp', 'Heizleistung'])
 
             # print('plot-Button-Methode geht bis hier')
-            Btn_Func.ax1.grid()
-            Btn_Func.ax1.set_ylim(-10, 110)
+            ax1.grid()
+            ax1.set_ylim(-10, 110)
 
             plotThread.alive = True
             plotThreadI = plotThread(2, 'plot')
             plotThreadI.start()
+            BackroundFunctions.process_alive = True
+
+            BackroundFunctions.plot()
 
             print('Previosshow')
             plt.show(block=False)  # block= stellt ein ob der Thread angehalten wird oder nicht
@@ -530,7 +609,7 @@ class timerThread(Thread):
 #     heat_val = QtCore.pyqtSignal(float)
 
 
-class plotThread(Thread):
+class plotThread(Process):
     def __init__(self, threadID, name):
         super().__init__()
         self.threadID = threadID
@@ -554,6 +633,7 @@ class plotThread(Thread):
             # if threadLock.locked() == False:
             #     threadLock.acquire()
             while self.alive:
+                print('progress present')
                 # print('set: ' + str(set) + '\ncur: ' + str(cur) + '\nheat: ' + str(heat))
 
                 # !!! Hier müssen noch die Werte bei Änderung gespeichert werden
@@ -569,7 +649,7 @@ class plotThread(Thread):
                 try:
                     plt.ion()
 
-                    time_point = int(Btn_Func.tp_slider.val * (pid.index / Btn_Func.tp_slider.valmax))
+                    time_point = int(tp_slider.val * (pid.index / tp_slider.valmax))
 
                     pid.set_view_y = pid.set_plot_y[time_point: time_point + 1000]
                     pid.cur_view_y = pid.cur_plot_y[time_point: time_point + 1000]
@@ -577,23 +657,26 @@ class plotThread(Thread):
                     #time.sleep(5)
                     # print('set: ' + str(self.set_view_y) + '\ncur: ' + str(self.cur_view_y) + '\nheat: ' + str(self.heat_view_y))
                     # !!! Hier müssen davor die arrays noch beschrieben werden
-                    Btn_Func.line_soll.set_ydata(pid.set_view_y)  # set_ydata
-                    Btn_Func.line_ist.set_ydata(pid.cur_view_y)
-                    Btn_Func.line_heat.set_ydata(pid.heat_view_y)
+                    print('set: ' + str(pid.set_view_y) + '\ncur: ' + str(pid.cur_view_y) + '\nheat: ' + str(pid.heat_view_y) + '\n')
+                    line_soll.set_ydata(pid.set_view_y)  # set_ydata
+                    line_ist.set_ydata(pid.cur_view_y)
+                    line_heat.set_ydata(pid.heat_view_y)
 
-                    Btn_Func.ax1.set_xlim(500 - int(Btn_Func.vw_slider.val), 500 + int(Btn_Func.vw_slider.val))  # self.index+1
-
+                    ax1.set_xlim(500 - int(vw_slider.val), 500 + int(vw_slider.val))  # self.index+1
+                    #print(matplotlib.get_backend())
                     # Draw benötigt zu viel Arbeitsspeicher
                     # Btn_Func.fig.canvas.flush_events()
                     #Btn_Func.fig.canvas.clear()
                     #renderer = Btn_Func.fig.canvas.renderer
-                    Btn_Func.fig.canvas.draw()
+
+                    fig.canvas.draw()
+                    fig.canvas.flush_events()
 
 
                 except:
                     print(Clrs.red + traceback.format_exc() + Clrs.end)
 
-                time.sleep(0.03)
+                #time.sleep(0.03)
 
             # if threadLock.locked():
             #     threadLock.release()
@@ -743,7 +826,7 @@ if __name__ == "__main__":
     ui.buttonPlay.clicked.connect(lambda: Btn_Func.start())
     ui.buttonPause.clicked.connect(lambda: Btn_Func.pause())
     ui.buttonStop.clicked.connect(lambda: Btn_Func.stopp())
-    ui.button_plot.clicked.connect(lambda: Btn_Func.plot_method()) # hier wird lambda benötigt
+    ui.button_plot.clicked.connect(lambda: Btn_Func.start_process_plot()) # hier wird lambda benötigt
     # !!! noch in Rast Klasse verschieben
     ui.hinzufuegenB.clicked.connect(lambda: Btn_Func.rastHinzufuegen())  # .connect darf nicht in "changeMainWindow()" verschoben werden
     ui.entfernenB.clicked.connect(lambda: Btn_Func.rastEntfernen())
@@ -785,9 +868,19 @@ if __name__ == "__main__":
     pid.interval.timeout.connect(lambda: BackroundFunctions.interval())
     pid.interval.setInterval(2000)  # 3000ms
 
+    # vw_slider = None
+    # tp_slider = None
+    # line_soll, = [None]
+    # line_ist, = [None]
+    # line_heat, = [None]
+    # ax1 = None
+    # ax2 = None
+    # fig = None
+
     # muss mit Plot von main-Thread in Button-Func ausgeführt werden
 
     # Initialisierung Timer
+    executor = plotThread(3, 'plot')
     timer = MyTimer()
     threadLock = threading.Lock()
 
@@ -803,9 +896,12 @@ if __name__ == "__main__":
 
     # !!!!!!! Bedingung für Exit // funktioniert noch nicht
     app.exec_()
-    print('bye')
+
 
 
     timerThread.alive = False
     plotThread.alive = False
+    executor.shutdown(wait=False) #!!!Executor wird hier nicht aufgehalten
+    BackroundFunctions.process_alive = False
+    print('bye' + str(BackroundFunctions.process_alive))
     sys.exit(0)
