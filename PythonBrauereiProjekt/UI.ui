@@ -23,6 +23,7 @@
       <property name="font">
        <font>
         <pointsize>20</pointsize>
+        <bold>false</bold>
        </font>
       </property>
       <property name="cursor">
@@ -32,7 +33,7 @@
        <enum>QTabWidget::South</enum>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>4</number>
       </property>
       <property name="movable">
        <bool>true</bool>
@@ -41,13 +42,205 @@
        <attribute name="title">
         <string>Übersicht</string>
        </attribute>
+       <layout class="QGridLayout" name="gridLayout_8">
+        <item row="0" column="0">
+         <widget class="QLabel" name="label_3">
+          <property name="text">
+           <string>--Übersicht noch außer Betrieb--</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </widget>
       <widget class="QWidget" name="meischen">
        <attribute name="title">
         <string>Meischen</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_2">
-        <item row="2" column="0" colspan="6">
+        <item row="3" column="2">
+         <widget class="QProgressBar" name="progressBarHeizleistung">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>100</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>20</width>
+            <height>100</height>
+           </size>
+          </property>
+          <property name="layoutDirection">
+           <enum>Qt::LeftToRight</enum>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QProgressBar {
+border: 1px solid black;
+text-align: top;
+padding: 1px;
+border-radius: 5px;
+background:rgb(255, 255, 255);
+width: 15px;
+}
+
+QProgressBar::chunk {
+background:rgb(170, 0, 0);
+border-radius: 4px;
+margin: 0.3px;
+
+}</string>
+          </property>
+          <property name="maximum">
+           <number>35</number>
+          </property>
+          <property name="value">
+           <number>15</number>
+          </property>
+          <property name="textVisible">
+           <bool>false</bool>
+          </property>
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="9" rowspan="3">
+         <spacer name="meischenSpacerOben">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="9" column="12">
+         <layout class="QVBoxLayout" name="verticalLayout">
+          <property name="spacing">
+           <number>30</number>
+          </property>
+          <property name="leftMargin">
+           <number>15</number>
+          </property>
+          <property name="topMargin">
+           <number>15</number>
+          </property>
+          <property name="rightMargin">
+           <number>15</number>
+          </property>
+          <property name="bottomMargin">
+           <number>15</number>
+          </property>
+          <item>
+           <widget class="QPushButton" name="hinzufuegenB">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="styleSheet">
+             <string notr="true"/>
+            </property>
+            <property name="text">
+             <string>Hinzufügen</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="entfernenB">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>Entfernen</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item row="3" column="12" rowspan="3">
+         <layout class="QVBoxLayout" name="vertikalTemperaturen">
+          <item>
+           <widget class="QLabel" name="lbl_ist_temp_meischen">
+            <property name="text">
+             <string>IST: 20°C</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="sollTemp">
+            <property name="text">
+             <string>SOLL: 50°C</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item row="7" column="0" colspan="13">
+         <widget class="QProgressBar" name="progressBarRast">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>99999</width>
+            <height>15</height>
+           </size>
+          </property>
+          <property name="layoutDirection">
+           <enum>Qt::LeftToRight</enum>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QProgressBar {
+    border: 1px solid black;
+    border-radius: 5px;
+}
+
+QProgressBar::chunk {
+    background-color:rgb(0, 85, 0);
+    border-radius: 4px;
+	margin: 0.5px;
+}</string>
+          </property>
+          <property name="maximum">
+           <number>1000</number>
+          </property>
+          <property name="value">
+           <number>300</number>
+          </property>
+          <property name="textVisible">
+           <bool>false</bool>
+          </property>
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="textDirection">
+           <enum>QProgressBar::BottomToTop</enum>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="3">
+         <widget class="Line" name="line">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+         </widget>
+        </item>
+        <item row="8" column="0" colspan="13">
          <widget class="QProgressBar" name="progressBarGesamt">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
@@ -67,6 +260,18 @@
             <kerning>true</kerning>
            </font>
           </property>
+          <property name="styleSheet">
+           <string notr="true">QProgressBar {
+    border: 1px solid black;
+    border-radius: 5px;
+}
+
+QProgressBar::chunk {
+    background-color:rgb(0, 85, 0);
+	border-radius: 4px;
+	margin: 0.5px;
+}</string>
+          </property>
           <property name="minimum">
            <number>0</number>
           </property>
@@ -74,7 +279,7 @@
            <number>1000</number>
           </property>
           <property name="value">
-           <number>0</number>
+           <number>600</number>
           </property>
           <property name="alignment">
            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
@@ -93,8 +298,18 @@
           </property>
          </widget>
         </item>
-        <item row="0" column="0">
-         <widget class="QLabel" name="meldungHeizplatte">
+        <item row="3" column="5">
+         <widget class="Line" name="line_2">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="8" rowspan="2">
+         <widget class="QPushButton" name="buttonStop">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
           <property name="sizePolicy">
            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
             <horstretch>0</horstretch>
@@ -107,39 +322,135 @@
             <height>100</height>
            </size>
           </property>
+          <property name="cursor">
+           <cursorShape>PointingHandCursor</cursorShape>
+          </property>
+          <property name="styleSheet">
+           <string notr="true"/>
+          </property>
+          <property name="text">
+           <string>stop</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="10">
+         <layout class="QVBoxLayout" name="verticalLayout_2">
+          <item>
+           <widget class="QLineEdit" name="lne_ist_temp_test_meischen"/>
+          </item>
+          <item>
+           <widget class="QLabel" name="lbl_ist_time_meische">
+            <property name="font">
+             <font>
+              <pointsize>20</pointsize>
+              <bold>false</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>Time: --:--.-</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item row="3" column="4">
+         <widget class="QLabel" name="meldungRuehrwerk">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>100</width>
+            <height>100</height>
+           </size>
+          </property>
+          <property name="font">
+           <font>
+            <pointsize>8</pointsize>
+            <bold>false</bold>
+           </font>
+          </property>
           <property name="text">
            <string/>
           </property>
           <property name="pixmap">
-           <pixmap>Icons/Heizplatte100x100.png</pixmap>
+           <pixmap>Icons/Propeller100x100.gif</pixmap>
           </property>
           <property name="scaledContents">
            <bool>false</bool>
           </property>
          </widget>
         </item>
-        <item row="3" column="0" colspan="6">
+        <item row="3" column="7">
+         <widget class="QPushButton" name="buttonPause">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>100</width>
+            <height>100</height>
+           </size>
+          </property>
+          <property name="cursor">
+           <cursorShape>PointingHandCursor</cursorShape>
+          </property>
+          <property name="styleSheet">
+           <string notr="true"/>
+          </property>
+          <property name="text">
+           <string>pause</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="6">
+         <widget class="QPushButton" name="buttonPlay">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+            <horstretch>4</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>100</width>
+            <height>100</height>
+           </size>
+          </property>
+          <property name="cursor">
+           <cursorShape>PointingHandCursor</cursorShape>
+          </property>
+          <property name="mouseTracking">
+           <bool>false</bool>
+          </property>
+          <property name="styleSheet">
+           <string notr="true"/>
+          </property>
+          <property name="text">
+           <string>play</string>
+          </property>
+         </widget>
+        </item>
+        <item row="9" column="0" colspan="11">
          <widget class="QTableWidget" name="rastenTabelle">
           <property name="cursor" stdset="0">
            <cursorShape>ArrowCursor</cursorShape>
           </property>
-          <row>
-           <property name="text">
-            <string>1</string>
-           </property>
-          </row>
-          <row>
-           <property name="text">
-            <string>2</string>
-           </property>
-           <property name="background">
-            <color>
-             <red>200</red>
-             <green>220</green>
-             <blue>255</blue>
-            </color>
-           </property>
-          </row>
+          <property name="gridStyle">
+           <enum>Qt::SolidLine</enum>
+          </property>
           <column>
            <property name="text">
             <string>Name</string>
@@ -173,393 +484,76 @@
             <set>AlignLeading|AlignVCenter</set>
            </property>
           </column>
-          <item row="0" column="0">
-           <property name="text">
-            <string>anfang</string>
-           </property>
-           <property name="flags">
-            <set>ItemIsSelectable|ItemIsEnabled</set>
-           </property>
-          </item>
-          <item row="0" column="3">
-           <property name="text">
-            <string>AN</string>
-           </property>
-           <property name="toolTip">
-            <string notr="true" comment="toolTipKennung" extracomment="toolTipKommentar"/>
-           </property>
-           <property name="whatsThis">
-            <string notr="true" comment="whatsThisKennung" extracomment="whatsThisKommentar"/>
-           </property>
-           <property name="font">
-            <font>
-             <stylestrategy>NoAntialias</stylestrategy>
-            </font>
-           </property>
-           <property name="textAlignment">
-            <set>AlignCenter</set>
-           </property>
-           <property name="background">
-            <brush brushstyle="SolidPattern">
-             <color alpha="255">
-              <red>150</red>
-              <green>255</green>
-              <blue>150</blue>
-             </color>
-            </brush>
-           </property>
-           <property name="foreground">
-            <brush brushstyle="NoBrush">
-             <color alpha="255">
-              <red>0</red>
-              <green>0</green>
-              <blue>0</blue>
-             </color>
-            </brush>
-           </property>
-           <property name="flags">
-            <set>ItemIsSelectable|ItemIsEditable|ItemIsDragEnabled|ItemIsDropEnabled|ItemIsUserCheckable|ItemIsEnabled|ItemIsAutoTristate</set>
-           </property>
-          </item>
-          <item row="0" column="4">
-           <property name="text">
-            <string>AUS</string>
-           </property>
-           <property name="textAlignment">
-            <set>AlignCenter</set>
-           </property>
-           <property name="background">
-            <brush brushstyle="SolidPattern">
-             <color alpha="255">
-              <red>255</red>
-              <green>150</green>
-              <blue>150</blue>
-             </color>
-            </brush>
-           </property>
-          </item>
-          <item row="1" column="0">
-           <property name="text">
-            <string>ende</string>
-           </property>
-           <property name="background">
-            <brush brushstyle="SolidPattern">
-             <color alpha="255">
-              <red>200</red>
-              <green>220</green>
-              <blue>255</blue>
-             </color>
-            </brush>
-           </property>
-          </item>
-          <item row="1" column="1">
-           <property name="text">
-            <string/>
-           </property>
-           <property name="background">
-            <brush brushstyle="SolidPattern">
-             <color alpha="255">
-              <red>200</red>
-              <green>220</green>
-              <blue>255</blue>
-             </color>
-            </brush>
-           </property>
-          </item>
-          <item row="1" column="2">
-           <property name="text">
-            <string/>
-           </property>
-           <property name="background">
-            <brush brushstyle="SolidPattern">
-             <color alpha="255">
-              <red>200</red>
-              <green>220</green>
-              <blue>255</blue>
-             </color>
-            </brush>
-           </property>
-           <property name="flags">
-            <set>ItemIsSelectable</set>
-           </property>
-          </item>
-          <item row="1" column="3">
-           <property name="text">
-            <string>AUS</string>
-           </property>
-           <property name="textAlignment">
-            <set>AlignCenter</set>
-           </property>
-           <property name="background">
-            <brush brushstyle="SolidPattern">
-             <color alpha="255">
-              <red>255</red>
-              <green>150</green>
-              <blue>150</blue>
-             </color>
-            </brush>
-           </property>
-          </item>
-          <item row="1" column="4">
-           <property name="text">
-            <string>AN</string>
-           </property>
-           <property name="textAlignment">
-            <set>AlignCenter</set>
-           </property>
-           <property name="background">
-            <brush brushstyle="SolidPattern">
-             <color alpha="255">
-              <red>150</red>
-              <green>255</green>
-              <blue>150</blue>
-             </color>
-            </brush>
-           </property>
-          </item>
-          <item row="1" column="5">
-           <property name="text">
-            <string/>
-           </property>
-           <property name="background">
-            <brush brushstyle="SolidPattern">
-             <color alpha="255">
-              <red>200</red>
-              <green>220</green>
-              <blue>255</blue>
-             </color>
-            </brush>
-           </property>
-          </item>
          </widget>
         </item>
-        <item row="0" column="2">
-         <widget class="QPushButton" name="buttonPlay">
-          <property name="enabled">
-           <bool>true</bool>
-          </property>
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-            <horstretch>4</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>100</width>
-            <height>100</height>
-           </size>
-          </property>
-          <property name="cursor">
-           <cursorShape>PointingHandCursor</cursorShape>
-          </property>
-          <property name="mouseTracking">
-           <bool>false</bool>
-          </property>
-          <property name="styleSheet">
-           <string notr="true"/>
-          </property>
-          <property name="text">
-           <string>play</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="4">
-         <widget class="QPushButton" name="buttonStop">
-          <property name="enabled">
-           <bool>true</bool>
-          </property>
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>100</width>
-            <height>100</height>
-           </size>
-          </property>
-          <property name="cursor">
-           <cursorShape>PointingHandCursor</cursorShape>
-          </property>
-          <property name="styleSheet">
-           <string notr="true"/>
-          </property>
-          <property name="text">
-           <string>stop</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="3">
-         <widget class="QPushButton" name="buttonPause">
-          <property name="enabled">
-           <bool>true</bool>
-          </property>
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>100</width>
-            <height>100</height>
-           </size>
-          </property>
-          <property name="cursor">
-           <cursorShape>PointingHandCursor</cursorShape>
-          </property>
-          <property name="styleSheet">
-           <string notr="true"/>
-          </property>
-          <property name="text">
-           <string>pause</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="1">
-         <widget class="QLabel" name="meldungRuehrwerk">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>100</width>
-            <height>100</height>
-           </size>
-          </property>
-          <property name="font">
-           <font>
-            <pointsize>8</pointsize>
-           </font>
-          </property>
-          <property name="text">
-           <string/>
-          </property>
-          <property name="pixmap">
-           <pixmap>Icons/Propeller100x100.gif</pixmap>
-          </property>
-          <property name="scaledContents">
-           <bool>false</bool>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="6">
-         <layout class="QVBoxLayout" name="vertikalTemperaturen">
-          <item>
-           <widget class="QLabel" name="istTemp">
-            <property name="text">
-             <string>IST: 30°C</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLabel" name="sollTemp">
-            <property name="text">
-             <string>SOLL: 50°C</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-        <item row="0" column="5">
-         <spacer name="meischenSpacerOben">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="3" column="6">
-         <layout class="QVBoxLayout" name="verticalLayout">
+        <item row="3" column="1">
+         <layout class="QVBoxLayout" name="verticalLayout_3">
           <property name="spacing">
-           <number>30</number>
-          </property>
-          <property name="leftMargin">
-           <number>15</number>
-          </property>
-          <property name="topMargin">
-           <number>15</number>
-          </property>
-          <property name="rightMargin">
-           <number>15</number>
-          </property>
-          <property name="bottomMargin">
-           <number>15</number>
-          </property>
-          <item>
-           <widget class="QPushButton" name="hinzufuegenB">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="text">
-             <string>Hinzufügen</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="entfernenB">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="text">
-             <string>Entfernen</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-        <item row="1" column="0" colspan="6">
-         <widget class="QProgressBar" name="progressBarRast">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>99999</width>
-            <height>15</height>
-           </size>
-          </property>
-          <property name="maximum">
-           <number>1000</number>
-          </property>
-          <property name="value">
            <number>0</number>
           </property>
-          <property name="textVisible">
-           <bool>false</bool>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="6">
-         <widget class="QPushButton" name="button_plot">
-          <property name="enabled">
-           <bool>true</bool>
-          </property>
-          <property name="text">
-           <string>Plot</string>
-          </property>
-         </widget>
+          <item>
+           <widget class="QLabel" name="meldungHeizplatte">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>100</width>
+              <height>88</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="pixmap">
+             <pixmap>Icons/Heizplatte100x88.png</pixmap>
+            </property>
+            <property name="scaledContents">
+             <bool>false</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="lbl_heizleistung_meischen">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>18</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <pointsize>10</pointsize>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QLabel{color: rgb(170, 0, 0);}</string>
+            </property>
+            <property name="text">
+             <string>2100W</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </item>
        </layout>
       </widget>
@@ -567,12 +561,35 @@
        <attribute name="title">
         <string>Leutern/Nachguss</string>
        </attribute>
-       <layout class="QGridLayout" name="gridLayout_5"/>
+       <layout class="QGridLayout" name="gridLayout_5">
+        <item row="0" column="0">
+         <widget class="QLabel" name="label">
+          <property name="text">
+           <string>--Leutern/Nachguss noch außer Betrieb--</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </widget>
       <widget class="QWidget" name="kochen">
        <attribute name="title">
         <string>Kochen</string>
        </attribute>
+       <layout class="QGridLayout" name="gridLayout_7">
+        <item row="0" column="0">
+         <widget class="QLabel" name="label_2">
+          <property name="text">
+           <string>--Kochen noch außer Betrieb--</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </widget>
       <widget class="QWidget" name="einstellungen">
        <attribute name="title">
@@ -581,33 +598,66 @@
        <layout class="QGridLayout" name="gridLayout_3">
         <item row="0" column="0">
          <widget class="QTabWidget" name="tabWidget">
+          <property name="font">
+           <font>
+            <pointsize>20</pointsize>
+            <bold>false</bold>
+            <kerning>false</kerning>
+           </font>
+          </property>
           <property name="layoutDirection">
            <enum>Qt::LeftToRight</enum>
+          </property>
+          <property name="styleSheet">
+           <string notr="true"/>
           </property>
           <property name="currentIndex">
            <number>0</number>
           </property>
           <widget class="QWidget" name="io_test_tab">
+           <property name="font">
+            <font>
+             <family>Segoe UI</family>
+             <pointsize>20</pointsize>
+             <bold>false</bold>
+            </font>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">QPushButton{background-color: rgb(255,255,255); color: black; border-radius: 3px; border: 0.5px solid lightgrey; font: 20pt  &quot;Segoe UI&quot;;}</string>
+           </property>
            <attribute name="title">
             <string>IO Test</string>
            </attribute>
            <layout class="QGridLayout" name="gridLayout_4" columnstretch="1,1,0,0">
             <item row="3" column="0">
-             <widget class="QLabel" name="label">
+             <widget class="QLabel" name="lbl_sensor_kochen_test">
+              <property name="font">
+               <font>
+                <pointsize>20</pointsize>
+                <bold>false</bold>
+                <kerning>false</kerning>
+               </font>
+              </property>
               <property name="text">
                <string>Sensor Kochen: --°C</string>
               </property>
              </widget>
             </item>
             <item row="3" column="1">
-             <widget class="QPushButton" name="pushButton_3">
+             <widget class="QPushButton" name="btn_cokL_test">
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>44</height>
+               </size>
+              </property>
               <property name="text">
                <string>Heizung Kochen links</string>
               </property>
              </widget>
             </item>
             <item row="4" column="2">
-             <widget class="QDial" name="dial_4">
+             <widget class="QDial" name="dal_cokR_test">
               <property name="minimum">
                <number>500</number>
               </property>
@@ -620,17 +670,12 @@
              </widget>
             </item>
             <item row="1" column="0">
-             <widget class="QLabel" name="label_3">
+             <widget class="QLabel" name="lbl_sensor_meische_test">
               <property name="font">
                <font>
-                <family>Siemens Sans Black</family>
-                <pointsize>19</pointsize>
-                <italic>false</italic>
-                <bold>false</bold>
+                <pointsize>20</pointsize>
+                <kerning>true</kerning>
                </font>
-              </property>
-              <property name="styleSheet">
-               <string notr="true">font: 19pt &quot;Siemens Sans Black&quot;;</string>
               </property>
               <property name="text">
                <string>Sensor Meische: --°C</string>
@@ -638,14 +683,275 @@
              </widget>
             </item>
             <item row="2" column="0">
-             <widget class="QLabel" name="label_2">
+             <widget class="QLabel" name="lbl_sensor_nachguss_test">
+              <property name="font">
+               <font>
+                <pointsize>20</pointsize>
+                <bold>false</bold>
+               </font>
+              </property>
               <property name="text">
                <string>Sensor Nachguss: --°C</string>
               </property>
              </widget>
             </item>
+            <item row="3" column="2">
+             <widget class="QDial" name="dal_cokL_test">
+              <property name="minimum">
+               <number>500</number>
+              </property>
+              <property name="maximum">
+               <number>3500</number>
+              </property>
+              <property name="singleStep">
+               <number>100</number>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QLabel" name="lbl_outputs_test">
+              <property name="font">
+               <font>
+                <pointsize>20</pointsize>
+                <bold>false</bold>
+                <kerning>false</kerning>
+               </font>
+              </property>
+              <property name="text">
+               <string>Outputs:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="2">
+             <widget class="QDial" name="dal_fill_test">
+              <property name="minimum">
+               <number>500</number>
+              </property>
+              <property name="maximum">
+               <number>3500</number>
+              </property>
+              <property name="singleStep">
+               <number>100</number>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="1">
+             <widget class="QPushButton" name="btn_fill_test">
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>44</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Heizung Nachguss</string>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="1">
+             <widget class="QPushButton" name="btn_cokR_test">
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>44</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Heizung Kochen rechts</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="0">
+             <widget class="QLabel" name="lbl_inputs_test">
+              <property name="font">
+               <font>
+                <pointsize>20</pointsize>
+                <bold>false</bold>
+                <kerning>false</kerning>
+               </font>
+              </property>
+              <property name="text">
+               <string>Inputs:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QPushButton" name="btn_mash_test">
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>44</height>
+               </size>
+              </property>
+              <property name="font">
+               <font>
+                <family>Segoe UI</family>
+                <pointsize>20</pointsize>
+                <italic>false</italic>
+                <bold>false</bold>
+               </font>
+              </property>
+              <property name="styleSheet">
+               <string notr="true"/>
+              </property>
+              <property name="text">
+               <string>Heizung Meische</string>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="3">
+             <widget class="QLabel" name="lbl_cokR_test">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>60</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="font">
+               <font>
+                <pointsize>14</pointsize>
+                <bold>false</bold>
+               </font>
+              </property>
+              <property name="text">
+               <string>500W</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="3">
+             <widget class="QLabel" name="lbl_cokL_test">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>60</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="font">
+               <font>
+                <pointsize>14</pointsize>
+                <bold>false</bold>
+               </font>
+              </property>
+              <property name="text">
+               <string>500W</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="3">
+             <widget class="QLabel" name="lbl_fill_test">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>60</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="font">
+               <font>
+                <pointsize>14</pointsize>
+                <bold>false</bold>
+               </font>
+              </property>
+              <property name="text">
+               <string>500W</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="3">
+             <widget class="QLabel" name="lbl_mash_test">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>60</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="font">
+               <font>
+                <pointsize>14</pointsize>
+                <bold>false</bold>
+               </font>
+              </property>
+              <property name="text">
+               <string>500W</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item row="5" column="1" colspan="3">
+             <widget class="QPushButton" name="btn_pump_test">
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>44</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Pumpe</string>
+              </property>
+             </widget>
+            </item>
+            <item row="6" column="1" colspan="3">
+             <widget class="QPushButton" name="btn_stir_test">
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>44</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Rührwerk</string>
+              </property>
+             </widget>
+            </item>
+            <item row="7" column="1" colspan="3">
+             <widget class="QPushButton" name="btn_alrm_test">
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>44</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Brauruf</string>
+              </property>
+             </widget>
+            </item>
             <item row="1" column="2">
-             <widget class="QDial" name="dial">
+             <widget class="QDial" name="dal_mash_test">
               <property name="minimum">
                <number>500</number>
               </property>
@@ -660,133 +966,22 @@
               </property>
              </widget>
             </item>
-            <item row="3" column="2">
-             <widget class="QDial" name="dial_3">
-              <property name="minimum">
-               <number>500</number>
-              </property>
-              <property name="maximum">
-               <number>3500</number>
-              </property>
-              <property name="singleStep">
-               <number>100</number>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="1">
-             <widget class="QLabel" name="label_5">
-              <property name="text">
-               <string>Outputs:</string>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="2">
-             <widget class="QDial" name="dial_2">
-              <property name="minimum">
-               <number>500</number>
-              </property>
-              <property name="maximum">
-               <number>3500</number>
-              </property>
-              <property name="singleStep">
-               <number>100</number>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="1">
-             <widget class="QPushButton" name="pushButton">
-              <property name="text">
-               <string>Heizung Nachguss</string>
-              </property>
-             </widget>
-            </item>
-            <item row="4" column="1">
-             <widget class="QPushButton" name="pushButton_5">
-              <property name="text">
-               <string>Heizung Kochen rechts</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="0">
+            <item row="4" column="0" rowspan="3">
              <widget class="QLabel" name="label_4">
-              <property name="text">
-               <string>Inputs:</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="1">
-             <widget class="QPushButton" name="pushButton_2">
-              <property name="text">
-               <string>Heizung Meische</string>
-              </property>
-             </widget>
-            </item>
-            <item row="4" column="3">
-             <widget class="QLabel" name="label_6">
-              <property name="font">
-               <font>
-                <pointsize>14</pointsize>
-               </font>
+              <property name="styleSheet">
+               <string notr="true">QLabel{
+color: red;
+	font: 700 20pt &quot;Segoe UI&quot;;
+}</string>
               </property>
               <property name="text">
-               <string>500</string>
+               <string>! ! !
+Noch ohne Sicherheitsmechanismus
+ also Kopf einschalten
+! ! !</string>
               </property>
-             </widget>
-            </item>
-            <item row="3" column="3">
-             <widget class="QLabel" name="label_7">
-              <property name="font">
-               <font>
-                <pointsize>14</pointsize>
-               </font>
-              </property>
-              <property name="text">
-               <string>500</string>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="3">
-             <widget class="QLabel" name="label_8">
-              <property name="font">
-               <font>
-                <pointsize>14</pointsize>
-               </font>
-              </property>
-              <property name="text">
-               <string>500</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="3">
-             <widget class="QLabel" name="label_9">
-              <property name="font">
-               <font>
-                <pointsize>14</pointsize>
-               </font>
-              </property>
-              <property name="text">
-               <string>500</string>
-              </property>
-             </widget>
-            </item>
-            <item row="5" column="1" colspan="3">
-             <widget class="QPushButton" name="pushButton_4">
-              <property name="text">
-               <string>Pumpe</string>
-              </property>
-             </widget>
-            </item>
-            <item row="6" column="1" colspan="3">
-             <widget class="QPushButton" name="pushButton_6">
-              <property name="text">
-               <string>Rührwerk</string>
-              </property>
-             </widget>
-            </item>
-            <item row="7" column="1" colspan="3">
-             <widget class="QPushButton" name="pushButton_7">
-              <property name="text">
-               <string>Brauruf</string>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
               </property>
              </widget>
             </item>
@@ -798,10 +993,12 @@
            </attribute>
            <layout class="QGridLayout" name="gridLayout_6">
             <item row="1" column="0">
-             <widget class="QLabel" name="label_11">
+             <widget class="QLabel" name="lbl_hinweis_zeit_start_einstellungen">
               <property name="font">
                <font>
                 <pointsize>8</pointsize>
+                <bold>false</bold>
+                <kerning>false</kerning>
                </font>
               </property>
               <property name="text">
@@ -811,21 +1008,21 @@ kommen damit die Zeit der nächsten Rast gestartet wird.</string>
              </widget>
             </item>
             <item row="3" column="0">
-             <widget class="QLabel" name="label_13">
+             <widget class="QLabel" name="lbl_p_wert_einstellungen">
               <property name="text">
                <string>P-Wert:</string>
               </property>
              </widget>
             </item>
             <item row="0" column="0">
-             <widget class="QLabel" name="label_10">
+             <widget class="QLabel" name="lbl_zeit_start_toleranz_einstellungen">
               <property name="text">
                <string>Zeit-Start-Toleranz:</string>
               </property>
              </widget>
             </item>
             <item row="0" column="1" rowspan="2">
-             <widget class="QComboBox" name="cob_tol_change">
+             <widget class="QComboBox" name="cob_zeit_start_einstellungen">
               <property name="cursor">
                <cursorShape>ArrowCursor</cursorShape>
               </property>
@@ -834,7 +1031,7 @@ kommen damit die Zeit der nächsten Rast gestartet wird.</string>
               </property>
               <item>
                <property name="text">
-                <string>+/- 2°C</string>
+                <string>+/-2°C</string>
                </property>
               </item>
               <item>
@@ -850,30 +1047,30 @@ kommen damit die Zeit der nächsten Rast gestartet wird.</string>
              </widget>
             </item>
             <item row="4" column="0">
-             <widget class="QLabel" name="label_14">
+             <widget class="QLabel" name="lbl_i_wert_einstellungen">
               <property name="text">
                <string>I-Wert:</string>
               </property>
              </widget>
             </item>
             <item row="5" column="0">
-             <widget class="QLabel" name="label_15">
+             <widget class="QLabel" name="lbl_d_wert_einstellungen">
               <property name="text">
                <string>D-Wert</string>
               </property>
              </widget>
             </item>
             <item row="3" column="1">
-             <widget class="QLineEdit" name="lineEdit"/>
+             <widget class="QLineEdit" name="lne_p_wert_einstellungen"/>
             </item>
             <item row="4" column="1">
-             <widget class="QLineEdit" name="lineEdit_2"/>
+             <widget class="QLineEdit" name="lne_i_wert_einstellungen"/>
             </item>
             <item row="5" column="1">
-             <widget class="QLineEdit" name="lineEdit_3"/>
+             <widget class="QLineEdit" name="lne_d_wert_einstellungen"/>
             </item>
             <item row="2" column="0" colspan="2">
-             <widget class="QLabel" name="label_12">
+             <widget class="QLabel" name="lbl_pid_regler_einstellungen_einstellungen">
               <property name="text">
                <string>PID-Regler Einstellungen:</string>
               </property>
